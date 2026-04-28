@@ -30,7 +30,7 @@ const inWishlist = isInWishlist(id);
   const { addToCart } = useCart();
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4 w-full flex flex-col h-full">
+    <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 w-full flex flex-col h-full">
 
       {/* Product Image */}
      <div className="relative w-full aspect-[4/3] overflow-hidden rounded-lg">

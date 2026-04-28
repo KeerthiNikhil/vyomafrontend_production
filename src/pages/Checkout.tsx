@@ -28,6 +28,22 @@ const [address, setAddress] = useState<any>(null);
   const deliveryFee = subtotal > 499 ? 0 : 95;
   const total = subtotal + deliveryFee;
 
+  const fetchAddress = async () => {
+  try {
+    const res = await axios.get("/address");
+
+    if (res.data.success && res.data.data) {
+      setAddress(res.data.data);
+    }
+  } catch (err) {
+    console.log("No address yet");
+  }
+};
+
+useEffect(() => {
+  fetchAddress();
+}, []);
+
   const handlePlaceOrder = async () => {
     try {
       if (!cart.length) {
@@ -48,6 +64,8 @@ const [address, setAddress] = useState<any>(null);
         }
         return;
       }
+
+      
 
       const { data } = await axios.post("/orders/create-order", {
         amount: total,
@@ -93,16 +111,52 @@ const [address, setAddress] = useState<any>(null);
         <div className="lg:col-span-2 space-y-5">
 
           {/* ADDRESS */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold flex items-center gap-2 mb-5">
-              <MapPin size={18} />
-              Delivery Address
-            </h2>
+<div className="bg-white rounded-2xl shadow-sm p-6">
+  <h2 className="text-lg font-semibold flex items-center gap-2 mb-5">
+    <MapPin size={18} />
+    Delivery Address
+  </h2>
 
-            <button className="w-full border-2 border-dashed rounded-xl py-6 text-gray-500 hover:border-blue-500 hover:text-blue-600 transition">
-              + Add Delivery Address
-            </button>
-          </div>
+  {address ? (
+    <div className="border rounded-xl p-5 bg-gray-50">
+      <p className="font-semibold text-gray-900">
+        {address.name}
+      </p>
+
+      <p className="text-sm text-gray-600 mt-1">
+        {address.house}, {address.area}
+      </p>
+
+      {address.landmark && (
+        <p className="text-sm text-gray-600">
+          {address.landmark}
+        </p>
+      )}
+
+      <p className="text-sm text-gray-600">
+        {address.city}, {address.state} - {address.pincode}
+      </p>
+
+      <p className="text-sm text-gray-600 mt-1">
+        Phone: {address.phone}
+      </p>
+
+      <button
+        onClick={() => setOpenAddress(true)}
+        className="mt-4 text-blue-600 text-sm font-medium hover:underline"
+      >
+        Change Address
+      </button>
+    </div>
+  ) : (
+    <button
+      onClick={() => setOpenAddress(true)}
+      className="w-full border-2 border-dashed rounded-xl py-6 text-gray-500 hover:border-blue-500 hover:text-blue-600 transition"
+    >
+      + Add Delivery Address
+    </button>
+  )}
+</div>
 
           {/* PAYMENT */}
           <div className="bg-white rounded-2xl shadow-sm p-6">
@@ -197,6 +251,12 @@ const [address, setAddress] = useState<any>(null);
         </div>
 
       </div>
+
+      <AddressModal
+  open={openAddress}
+  onClose={() => setOpenAddress(false)}
+  onSaved={fetchAddress}
+/>
     </section>
   );
 };
