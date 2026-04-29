@@ -38,6 +38,9 @@ const AddProduct = () => {
   const [ageGroup,setAgeGroup] = useState("");
   const [material,setMaterial] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
+  const [deliveryTime, setDeliveryTime] = useState("");
+const [returnPolicy, setReturnPolicy] = useState("");
+const [codAvailable, setCodAvailable] = useState(true);
 
   /* ================= GET SHOPS ================= */
 
@@ -143,6 +146,9 @@ const [selectedSubCategory, setSelectedSubCategory] = useState("");
       formData.append("weight",weight);
       formData.append("size",size);
       formData.append("brand",brand);
+      formData.append("deliveryTime", deliveryTime);
+formData.append("returnPolicy", returnPolicy);
+formData.append("codAvailable", String(codAvailable));
       formData.append("modelNumber",modelNumber);
       formData.append("author",author);
       formData.append("ageGroup",ageGroup);
@@ -380,6 +386,30 @@ onChange={(e)=>setName(e.target.value)}
 
 
 <div className="grid md:grid-cols-2 gap-4">
+  <div className="grid md:grid-cols-3 gap-4">
+
+  <Input
+    placeholder="Delivery Time (30 mins / 2 days)"
+    value={deliveryTime}
+    onChange={(e) => setDeliveryTime(e.target.value)}
+  />
+
+  <Input
+    placeholder="Return Policy (No Return / 7 Days Return)"
+    value={returnPolicy}
+    onChange={(e) => setReturnPolicy(e.target.value)}
+  />
+
+  <select
+    value={codAvailable ? "yes" : "no"}
+    onChange={(e) => setCodAvailable(e.target.value === "yes")}
+    className="border rounded-md px-3 py-2"
+  >
+    <option value="yes">COD Available</option>
+    <option value="no">No COD</option>
+  </select>
+
+</div>
 
 <Input
 type="number"

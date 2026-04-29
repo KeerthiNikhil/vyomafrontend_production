@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Minus, Plus, Star, Heart } from "lucide-react";
-
+import { ChevronDown } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
 import axios from "@/lib/axios";
@@ -52,28 +52,20 @@ const ProductDetails = () => {
     });
   };
 
-  const deliveryDate = new Date();
-  deliveryDate.setDate(deliveryDate.getDate() + 3);
-
-  const formattedDate = deliveryDate.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
 
   return (
-   <section className="max-w-7xl mx-auto px-4 py-6 pb-24 relative">
+   <section className="max-w-7xl mx-auto px-4 lg:px-6 py-6 pb-24">
 
-      <div className="grid lg:grid-cols-12 gap-10 items-start relative">
+      <div className="grid lg:grid-cols-[300px_1fr_340px] gap-6 items-start">
 
         {/* LEFT (STICKY IMAGE) */}
-        <div className="lg:col-span-5 self-start">
+        <div className="self-start">
   <div className="sticky top-24 h-fit">
 
     <div className="space-y-4">
 
       {/* MAIN IMAGE */}
-      <div className="relative border border-slate-200 rounded-3xl shadow-sm p-5 bg-white">
+      <div className="relative bg-white border border-slate-200 rounded-2xl p-5">
         <button
           onClick={() =>
             inWishlist
@@ -85,7 +77,7 @@ const ProductDetails = () => {
                   image: images?.[0],
                 })
           }
-          className="absolute right-3 top-3 bg-white p-2 rounded-full shadow"
+          className="absolute top-5 right-5 h-12 w-12 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:scale-105 transition"
         >
           <Heart className={inWishlist ? "text-red-500 fill-red-500" : ""} />
         </button>
@@ -96,20 +88,19 @@ const ProductDetails = () => {
               ? `http://localhost:8000${images[activeImage]}`
               : "/placeholder.png"
           }
-          className="w-full h-[520px] object-contain"
+          className="w-full h-[260px] object-contain mx-auto"
         />
       </div>
 
       {/* THUMBNAILS */}
-      <div className="flex gap-3 overflow-x-auto">
+      <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
         {images.map((img: string, i: number) => (
           <img
             key={i}
             src={`http://localhost:8000${img}`}
             onClick={() => setActiveImage(i)}
-            className={`w-20 h-20 rounded-2xl cursor-pointer border border-slate-200 shadow-sm ${
-              activeImage === i
-  ? "border-blue-500 ring-2 ring-blue-100"
+className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-white p-1 transition ${              activeImage === i
+  ? "border-blue-500 ring-4 ring-blue-100"
   : "border-slate-200"
             }`}
           />
@@ -121,13 +112,16 @@ const ProductDetails = () => {
   </div>
 </div>
 
-        {/* RIGHT (ALL SCROLL CONTENT) */}
-        <div className="lg:col-span-7 space-y-8">
+       {/* MIDDLE COLUMN */}
+        <div className="space-y-6">
 
           {/* TOP INFO */}
           <div className="space-y-5">
 
-            <h1 className="text-2xl font-bold">{product.name}</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{product.name}</h1>
+            <p className="text-sm text-slate-500 leading-6">
+  {product.description}
+</p>
 
             <div className="flex items-center gap-2 text-yellow-500">
               <Star size={16} fill="currentColor" />
@@ -136,48 +130,42 @@ const ProductDetails = () => {
 
             <div className="flex items-center gap-3">
               <span className="text-3xl font-bold">₹{product.finalPrice}</span>
-              <span className="line-through text-gray-400">₹{product.price}</span>
-              <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs">
+              <span className="line-through text-base text-slate-400">₹{product.price}</span>
+              <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-sm font-medium">
                 {Math.round((product.discountValue / product.price) * 100)}% off
               </span>
               <span className="text-yellow-500 text-sm">🪙 149</span>
             </div>
 
-            <div className="flex gap-3">
-              <div className="border border-slate-200 rounded-2xl shadow-sm bg-white px-5 py-3 text-sm">
-                Buy 2+ for ₹{product.finalPrice - 60}
-              </div>
-              <div className="border border-slate-200 rounded-2xl shadow-sm bg-white px-5 py-3 text-sm">
-                Buy 5+ for ₹{product.finalPrice - 80}
-              </div>
-            </div>
+          
 
-            <div className="flex gap-4 text-sm text-gray-600">
-              <span>🚚 {formattedDate}</span>
-              <span>🔁 10 Days Return</span>
-              <span>💰 COD</span>
-            </div>
+           <div className="space-y-1 text-sm text-slate-600">
+  {product.deliveryTime && (
+    <p>🚚 {product.deliveryTime}</p>
+  )}
+
+  {product.returnPolicy && (
+    <p>🔁 {product.returnPolicy}</p>
+  )}
+
+  <p>
+    💰 {product.codAvailable ? "Cash on Delivery" : "Prepaid Only"}
+  </p>
+</div>
 
             <StockIndicator stock={product.stock} />
-            <EmiCalculator price={product.finalPrice} />
-
-            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5">
-              <p className="font-medium">{product.brand || "Dentaltech"}</p>
-              <p className="text-sm text-blue-600 cursor-pointer">
-                View More Products
-              </p>
-            </div>
+            
 
             <div className="flex items-center gap-4">
               <span>Quantity</span>
-              <div className="flex border border-slate-200 rounded-2xl shadow-sm bg-white overflow-hidden">
+              <div className="flex items-center border border-slate-200 rounded-full bg-white shadow-sm overflow-hidden">
                 <button
   className="px-4 py-2 hover:bg-slate-100"
   onClick={() => setQty(Math.max(1, qty - 1))}
 >
                   <Minus size={16} />
                 </button>
-                <span className="px-4">{qty}</span>
+                <span className="px-6 font-semibold text-lg">{qty}</span>
                 <button
   className="px-4 py-2 hover:bg-slate-100"
   onClick={() => setQty(qty + 1)}
@@ -187,45 +175,21 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Button
-  onClick={handleAddToCart}
-  className="flex-1 bg-blue-600 rounded-2xl shadow-sm h-12"
->
-                Add to Cart
-              </Button>
-              <Button className="flex-1 bg-orange-500 rounded-2xl shadow-sm h-12">
-                Buy Now
-              </Button>
-            </div>
+            <div className="space-y-3">
+  <Button
+    onClick={handleAddToCart}
+    className="w-full h-10 rounded-xl bg-blue-600 text-lg font-semibold"
+  >
+    Add to Cart
+  </Button>
+</div>
 
           </div>
 
           {/* TABS */}
           <Tabs product={product} />
 
-          {/* PAYMENT + BENEFITS */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5">
-              <h3 className="font-semibold mb-3">Payment Options</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">COD</div>
-                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">UPI</div>
-                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">Cards</div>
-                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">EMI</div>
-              </div>
-            </div>
-
-            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5">
-              <h3 className="font-semibold mb-3">Benefits</h3>
-              <ul className="text-sm space-y-1">
-                <li>✔ 100% Genuine</li>
-                <li>✔ Best Price</li>
-                <li>✔ Fast Delivery</li>
-                <li>✔ GST Invoice</li>
-              </ul>
-            </div>
-          </div>
+        
 
           {/* Q&A */}
           <div>
@@ -238,29 +202,120 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          {/* REVIEWS */}
-          <div>
-            <h3 className="font-semibold">Ratings & Reviews</h3>
-            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5 mt-3">
-              <p className="font-medium">User ⭐⭐⭐⭐⭐</p>
-              <p className="text-sm text-gray-600">
-                Very useful and economical product
-              </p>
-            </div>
-          </div>
 
         </div>
+        {/* RIGHT COLUMN */}
+<div className="space-y-5 sticky top-24">
+
+  {/* PRICE DETAILS */}
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+    <h3 className="font-semibold mb-4">Price Details</h3>
+
+    <div className="space-y-2 text-sm">
+      <div className="flex justify-between">
+        <span>Item Total</span>
+        <span>₹{product.price}</span>
+      </div>
+
+      <div className="flex justify-between text-green-600 font-medium">
+        <span>Saved</span>
+        <span>
+          ₹{product.price - product.finalPrice}
+        </span>
+      </div>
+    </div>
+  </div>
+
+ {/* OFFERS */}
+<div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+  <h3 className="font-semibold text-slate-900 mb-4">
+    Available Offers
+  </h3>
+
+  <div className="space-y-3 text-sm">
+
+    <div className="flex items-start gap-2">
+      <span className="text-green-600 text-base">🥬</span>
+      <p className="text-slate-700">
+        Buy <span className="font-semibold">2 Kg+</span> & get
+        <span className="text-green-600 font-semibold"> 5% OFF</span>
+      </p>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="text-orange-500 text-base">🛒</span>
+      <p className="text-slate-700">
+        Shop above <span className="font-semibold">₹499</span> &
+        get <span className="text-blue-600 font-semibold">Free Delivery</span>
+      </p>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="text-red-500 text-base">🎁</span>
+      <p className="text-slate-700">
+        Buy <span className="font-semibold">5 Items+</span> &
+        get <span className="text-purple-600 font-semibold">10% OFF</span>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+  {/* BUTTONS */}
+  <Button className="w-full h-10 bg-blue-600 rounded-xl">
+    Go To Cart
+  </Button>
+
+  <Button className="w-full h-10 bg-orange-500 rounded-xl">
+    Buy Now
+  </Button>
+
+  {/* PAYMENT */}
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+    <h3 className="font-semibold mb-3">Payment Options</h3>
+
+    <div className="grid grid-cols-2 gap-2 text-sm">
+      <div>💰 COD</div>
+      <div>📱 UPI</div>
+      <div>💳 Cards</div>
+      <div>🏦 EMI</div>
+    </div>
+  </div>
+
+  {/* BENEFITS */}
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+    <h3 className="font-semibold mb-3">Benefits</h3>
+
+    <ul className="space-y-2 text-sm">
+      <li>✔ 100% Genuine</li>
+      <li>✔ Best Price</li>
+      <li>✔ Fast Delivery</li>
+      <li>✔ GST Invoice</li>
+    </ul>
+  </div>
+
+  {/* REVIEWS */}
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+    <h3 className="font-semibold mb-3">Reviews</h3>
+
+    <p className="font-medium">⭐⭐⭐⭐⭐ User</p>
+    <p className="text-sm text-slate-600 mt-2">
+      Very useful and economical product
+    </p>
+  </div>
+
+</div>
       </div>
 
       {/* STICKY BAR */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-3 flex justify-between items-center z-50">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white/95 backdrop-blur-md px-6 py-4 flex justify-between items-center z-50">
         <div>
           <p className="text-sm">{product.name}</p>
           <p className="font-bold">₹{product.finalPrice}</p>
         </div>
         <button
           onClick={handleAddToCart}
-          className="bg-blue-600 text-white px-6 py-2 rounded"
+          className="bg-blue-600 text-white px-10 py-3 rounded-2xl font-semibold shadow-sm"
         >
           ADD
         </button>
@@ -282,66 +337,60 @@ const Tabs = ({ product }: any) => {
     "Packaging",
     "Direction To Use",
     "Additional Info",
-    "Warranty"
+    "Warranty",
   ];
-
-  return (
-    <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-6">
-
-      {/* TAB HEADERS */}
-      <div className="flex gap-6 border-b pb-3 text-sm overflow-x-auto">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActive(tab)}
-            className={`whitespace-nowrap ${
-              active === tab ? "text-blue-600 font-semibold" : ""
-            }`}
-          >
+return (
+  <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2">
+    {tabs.map((tab) => (
+      <div
+        key={tab}
+        className="border-b border-slate-200 last:border-b-0"
+      >
+        <button
+          onClick={() => setActive(active === tab ? "" : tab)}
+          className="w-full py-3 px-2 flex items-center justify-between text-left"
+        >
+          <span className="text-sm font-medium text-slate-700">
             {tab}
-          </button>
-        ))}
-      </div>
+          </span>
 
-      {/* TAB CONTENT */}
-      <div className="mt-4 text-sm text-gray-600">
+          <ChevronDown
+            size={15}
+            className={`transition-all duration-200 ${
+              active === tab
+                ? "rotate-180 text-slate-600"
+                : "text-slate-400"
+            }`}
+          />
+        </button>
 
-        {active === "Features" && (
-          <ul className="list-disc ml-5 space-y-2">
-            <li>Compatible with multiple implant systems</li>
-            <li>Precision torque ratchet</li>
-            <li>Color-coded drivers</li>
-          </ul>
-        )}
+        {active === tab && (
+          <div className="pb-3 px-2 text-xs leading-6 text-slate-500">
+            {tab === "Features" && (
+              <ul className="list-disc ml-4 space-y-1">
+                <li>Compatible with multiple implant systems</li>
+                <li>Precision torque ratchet</li>
+                <li>Color-coded drivers</li>
+              </ul>
+            )}
 
-        {active === "Description" && (
-          <p>{product.description || "No description available"}</p>
-        )}
+            {tab === "Description" && product.description}
 
-        {active === "Key Specifications" && (
-          <div>
-            <p>Brand: {product.brand}</p>
-            <p>Stock: {product.stock}</p>
+            {tab === "Key Specifications" && (
+              <div className="space-y-1">
+                <p>Brand: {product.brand}</p>
+                <p>Stock: {product.stock}</p>
+              </div>
+            )}
+
+            {tab === "Packaging" && <p>Comes in organized box packaging</p>}
+            {tab === "Direction To Use" && <p>Use as per clinical guidelines</p>}
+            {tab === "Additional Info" && <p>High durability and corrosion resistant</p>}
+            {tab === "Warranty" && <p>1 Year Manufacturer Warranty</p>}
           </div>
         )}
-
-        {active === "Packaging" && (
-          <p>Comes in organized box packaging</p>
-        )}
-
-        {active === "Direction To Use" && (
-          <p>Use as per clinical guidelines</p>
-        )}
-
-        {active === "Additional Info" && (
-          <p>High durability and corrosion resistant</p>
-        )}
-
-        {active === "Warranty" && (
-          <p>1 Year Manufacturer Warranty</p>
-        )}
-
       </div>
-    </div>
-  );
+    ))}
+  </div>
+);
 };
