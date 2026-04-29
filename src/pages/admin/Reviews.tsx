@@ -50,7 +50,9 @@ const Reviews = () => {
             Manage all customer reviews
           </p>
         </div>
-        <Button variant="outline" className="w-full sm:w-auto mt-4 sm:mt-0">
+        <Button
+  variant="outline"
+  className="w-full sm:w-auto mt-4 sm:mt-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
           <MessageSquare className="w-4 h-4 mr-2" />
           Export Reviews
         </Button>
@@ -59,15 +61,15 @@ const Reviews = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         
-        <Card className="shadow-sm rounded-xl">
-          <CardContent className="p-2">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5">
             <p className="text-[11px] text-muted-foreground">Total Reviews</p>
             <p className="text-base font-semibold">{stats.totalReviews}</p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm rounded-xl">
-          <CardContent className="p-2">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5">
             <p className="text-[11px] text-muted-foreground">Average Rating</p>
             <div className="flex items-center gap-1">
               <p className="text-base font-semibold">{stats.averageRating}</p>
@@ -76,15 +78,15 @@ const Reviews = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm rounded-xl">
-          <CardContent className="p-2">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5">
             <p className="text-[11px] text-muted-foreground">5 Star Reviews</p>
             <p className="text-base font-semibold text-blue-600">{stats.fiveStar}</p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm rounded-xl">
-          <CardContent className="p-2">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5">
             <p className="text-[11px] text-muted-foreground">4 Star Reviews</p>
             <p className="text-base font-semibold text-purple-600">{stats.fourStar}</p>
           </CardContent>
@@ -93,21 +95,21 @@ const Reviews = () => {
       </div>
 
       {/* Reviews List */}
-      <Card className="w-full bg-card text-card-foreground shadow-sm">
-        <CardHeader className="p-3 pb-2">
+      <Card className="w-full bg-white rounded-3xl border border-slate-200 shadow-sm">
+        <CardHeader className="px-6 pt-6 pb-4">
           <CardTitle className="text-base font-semibold">Customer Reviews</CardTitle>
           <CardDescription className="mt-0.5 text-xs text-muted-foreground">
             {filteredReviews.length} reviews found
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-3 pt-1">
+        <CardContent className="px-6 pb-6 pt-0">
           <div className="space-y-2">
             {currentReviews.map((review) => (
               
               <div 
                 key={review.id} 
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 py-2 bg-muted hover:bg-muted/70 rounded-lg transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-5 py-5 bg-slate-50 hover:bg-slate-100 rounded-3xl border border-slate-100 transition"
               >
 
                 {/* LEFT */}
@@ -142,10 +144,18 @@ const Reviews = () => {
 
                   {/* Actions */}
                   <div className="flex gap-1">
-                    <Button size="sm" variant="ghost" className="p-1 h-auto">
+                    <Button
+  size="sm"
+  variant="ghost"
+  className="h-10 w-10 rounded-2xl border border-slate-200 bg-white"
+>
                       <Eye className="w-3.5 h-3.5" />
                     </Button>
-                    <Button size="sm" variant="ghost" className="p-1 h-auto text-red-600">
+                    <Button
+  size="sm"
+  variant="ghost"
+  className="h-10 w-10 rounded-2xl border border-red-200 bg-white text-red-600"
+>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   </div>
@@ -168,7 +178,7 @@ const Reviews = () => {
                 size="sm"
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="h-8 w-8 p-0"
+                className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -182,7 +192,7 @@ const Reviews = () => {
                 size="sm"
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="h-8 w-8 p-0"
+                className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>

@@ -78,49 +78,49 @@ const Payments = () => {
       {/* ✅ Stats Cards FIXED */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
 
-        <Card className="shadow-sm rounded-xl bg-card text-card-foreground">
-          <CardContent className="p-2 flex items-center justify-between">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-[11px] text-muted-foreground">Total Paid</p>
               <p className="text-base font-semibold text-green-600">{stats.totalPaid}</p>
             </div>
-            <div className="p-1.5 bg-muted rounded-full">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
               <DollarSign className="w-3.5 h-3.5 text-green-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm rounded-xl bg-card text-card-foreground">
-          <CardContent className="p-2 flex items-center justify-between">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-[11px] text-muted-foreground">Pending</p>
               <p className="text-base font-semibold text-yellow-600">{stats.pending}</p>
             </div>
-            <div className="p-1.5 bg-muted rounded-full">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
               <Clock className="w-3.5 h-3.5 text-yellow-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm rounded-xl bg-card text-card-foreground">
-          <CardContent className="p-2 flex items-center justify-between">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-[11px] text-muted-foreground">This Month</p>
               <p className="text-base font-semibold">{stats.thisMonth}</p>
             </div>
-            <div className="p-1.5 bg-muted rounded-full">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
               <Calendar className="w-3.5 h-3.5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm rounded-xl bg-card text-card-foreground">
-          <CardContent className="p-2 flex items-center justify-between">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-5 flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-[11px] text-muted-foreground">Active Vendors</p>
               <p className="text-base font-semibold">{stats.vendorCount}</p>
             </div>
-            <div className="p-1.5 bg-muted rounded-full">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
               <Users className="w-3.5 h-3.5 text-purple-600" />
             </div>
           </CardContent>
@@ -129,11 +129,11 @@ const Payments = () => {
       </div>
 
       {/* Filters */}
-      <Card className="mb-4 bg-card">
-        <CardContent className="p-3">
+      <Card className="mb-4 bg-white rounded-3xl border border-slate-200 shadow-sm">
+        <CardContent className="p-5">
           <div className="flex flex-col sm:flex-row gap-2">
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="h-9 text-sm bg-background">
+              <SelectTrigger className="h-11 text-sm rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <SelectValue placeholder="Filter" />
               </SelectTrigger>
               <SelectContent>
@@ -145,7 +145,11 @@ const Payments = () => {
               </SelectContent>
             </Select>
 
-            <Button variant="outline" size="sm" className="h-9">
+            <Button
+  variant="outline"
+  size="sm"
+  className="h-11 rounded-2xl border border-slate-200 bg-white shadow-sm"
+>
               <Filter className="w-3.5 h-3.5 mr-1" />
               Filter
             </Button>
@@ -154,21 +158,21 @@ const Payments = () => {
       </Card>
 
       {/* Payments List */}
-      <Card className="bg-card text-card-foreground">
-        <CardHeader className="p-3 pb-2">
+      <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+        <CardHeader className="px-6 pt-6 pb-4">
           <CardTitle className="text-base font-semibold">Payment History</CardTitle>
           <CardDescription className="text-xs text-muted-foreground mt-0.5">
             {filteredPayments.length} transactions
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-3 pt-1">
+        <CardContent className="px-6 pb-6 pt-0">
           <div className="space-y-2">
 
             {currentPayments.map((payment) => (
               <div
                 key={payment.id}
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 py-2 bg-muted hover:bg-muted/70 rounded-lg"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-5 py-5 bg-slate-50 hover:bg-slate-100 rounded-3xl border border-slate-100 transition"
               >
 
                 <div className="flex flex-col">
@@ -187,12 +191,16 @@ const Payments = () => {
 
                   <div className="flex items-center gap-1">
                     {getStatusIcon(payment.status)}
-                    <Badge variant="outline" className="text-xs">
+                    <Badge className="rounded-xl bg-white border border-slate-200 text-slate-700 shadow-sm">
                       {payment.status}
                     </Badge>
                   </div>
 
-                  <Button size="sm" variant="ghost" className="p-1 h-auto">
+                  <Button
+  size="sm"
+  variant="ghost"
+  className="h-10 w-10 rounded-2xl border border-slate-200 bg-white"
+>
                     <Eye className="w-3.5 h-3.5" />
                   </Button>
                 </div>
@@ -209,13 +217,15 @@ const Payments = () => {
             </p>
 
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}>
+              <Button size="sm" variant="outline" onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
 
               <span className="text-sm">{currentPage} / {totalPages}</span>
 
-              <Button size="sm" variant="outline" onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}>
+              <Button size="sm" variant="outline" onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>

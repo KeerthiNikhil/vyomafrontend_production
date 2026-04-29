@@ -249,37 +249,37 @@ const Vendors = () => {
       {/* Stats Cards - FIXED */}
 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
 
-  <Card className="bg-card text-card-foreground shadow-sm rounded-xl">
-    <CardContent className="p-2 flex items-center justify-between">
+  <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+    <CardContent className="p-5 flex items-center justify-between">
       <div className="space-y-0.5">
         <p className="text-[11px] text-muted-foreground">Total Vendors</p>
         <p className="text-base font-semibold">{stats.totalVendors}</p>
       </div>
-      <div className="p-1.5 bg-muted rounded-full">
+      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
         <Store className="w-3.5 h-3.5 text-blue-600" />
       </div>
     </CardContent>
   </Card>
 
-  <Card className="bg-card text-card-foreground shadow-sm rounded-xl">
-    <CardContent className="p-2 flex items-center justify-between">
+  <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+    <CardContent className="p-5 flex items-center justify-between">
       <div className="space-y-0.5">
         <p className="text-[11px] text-muted-foreground">Total Products</p>
         <p className="text-base font-semibold text-blue-600">{stats.totalProducts}</p>
       </div>
-      <div className="p-1.5 bg-muted rounded-full">
+      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
         <Package className="w-3.5 h-3.5 text-blue-600" />
       </div>
     </CardContent>
   </Card>
 
-  <Card className="bg-card text-card-foreground shadow-sm rounded-xl">
-    <CardContent className="p-2 flex items-center justify-between">
+  <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm">
+    <CardContent className="p-5 flex items-center justify-between">
       <div className="space-y-0.5">
         <p className="text-[11px] text-muted-foreground">Total Revenue</p>
         <p className="text-base font-semibold text-purple-600">${stats.totalRevenue}</p>
       </div>
-      <div className="p-1.5 bg-muted rounded-full">
+      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
         <DollarSign className="w-3.5 h-3.5 text-purple-600" />
       </div>
     </CardContent>
@@ -291,8 +291,11 @@ const Vendors = () => {
       {/* Vendors List - SINGLE LINE CARDS */}
       <div className="space-y-2 sm:space-y-3">
         {currentVendors.map((vendor) => (
-          <Card key={vendor.id} className="bg-card text-card-foreground shadow-sm hover:shadow transition-all rounded-lg">
-            <CardContent className="p-2">
+          <Card
+  key={vendor.id}
+  className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition"
+>
+            <CardContent className="p-5">
               {/* Single Line Layout */}
               <div className="flex items-center gap-2">
                 {/* Logo */}
@@ -350,7 +353,7 @@ const Vendors = () => {
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="h-7 w-7 p-0"
+                      className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white shadow-sm"
                       onClick={() => viewVendorDetails(vendor)}
                     >
                       <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -358,7 +361,7 @@ const Vendors = () => {
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="h-10 w-10 p-0 rounded-2xl border border-red-200 bg-white text-red-600 shadow-sm hover:bg-red-50"
                       onClick={() => confirmCancelShop(vendor)}
                     >
                       <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -383,7 +386,7 @@ const Vendors = () => {
               size="sm"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="h-7 w-7 sm:h-9 sm:w-9 p-0"
+              className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
               <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
@@ -395,7 +398,7 @@ const Vendors = () => {
               size="sm"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="h-7 w-7 sm:h-9 sm:w-9 p-0"
+              className="h-10 w-10 p-0 rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
               <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
@@ -430,7 +433,7 @@ const Vendors = () => {
               </div>
 
               {/* Owner Information */}
-              <div className="border rounded-lg p-4">
+              <div className="border border-slate-200 rounded-3xl bg-white shadow-sm p-5">
                 <h4 className="font-semibold mb-3 flex items-center gap-2">
                   <User className="w-4 h-4" />
                   Owner Information
@@ -448,13 +451,13 @@ const Vendors = () => {
               </div>
 
               {/* Business Description */}
-              <div className="border rounded-lg p-4">
+              <div className="border border-slate-200 rounded-3xl bg-white shadow-sm p-5">
                 <h4 className="font-semibold mb-2">Business Description</h4>
                 <p className="text-sm text-gray-700">{selectedVendor.description}</p>
               </div>
 
               {/* Contact Information */}
-              <div className="border rounded-lg p-4">
+              <div className="border border-slate-200 rounded-3xl bg-white shadow-sm p-5">
                 <h4 className="font-semibold mb-3">Contact Information</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
@@ -482,7 +485,7 @@ const Vendors = () => {
               </div>
 
               {/* Registration Details */}
-              <div className="border rounded-lg p-4">
+              <div className="border border-slate-200 rounded-3xl bg-white shadow-sm p-5">
                 <h4 className="font-semibold mb-3">Registration Details</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedVendor.gstNumber && (
@@ -543,7 +546,7 @@ const Vendors = () => {
               </div>
 
               {/* Business Statistics */}
-              <div className="border rounded-lg p-4">
+              <div className="border border-slate-200 rounded-3xl bg-white shadow-sm p-5">
                 <h4 className="font-semibold mb-3">Business Statistics</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">

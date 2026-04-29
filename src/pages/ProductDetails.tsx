@@ -73,7 +73,7 @@ const ProductDetails = () => {
     <div className="space-y-4">
 
       {/* MAIN IMAGE */}
-      <div className="relative border rounded-2xl p-4 bg-white">
+      <div className="relative border border-slate-200 rounded-3xl shadow-sm p-5 bg-white">
         <button
           onClick={() =>
             inWishlist
@@ -107,8 +107,10 @@ const ProductDetails = () => {
             key={i}
             src={`http://localhost:8000${img}`}
             onClick={() => setActiveImage(i)}
-            className={`w-20 h-20 rounded-lg cursor-pointer border ${
-              activeImage === i ? "border-blue-500" : "border-gray-200"
+            className={`w-20 h-20 rounded-2xl cursor-pointer border border-slate-200 shadow-sm ${
+              activeImage === i
+  ? "border-blue-500 ring-2 ring-blue-100"
+  : "border-slate-200"
             }`}
           />
         ))}
@@ -142,10 +144,10 @@ const ProductDetails = () => {
             </div>
 
             <div className="flex gap-3">
-              <div className="border px-4 py-2 rounded-lg text-sm">
+              <div className="border border-slate-200 rounded-2xl shadow-sm bg-white px-5 py-3 text-sm">
                 Buy 2+ for ₹{product.finalPrice - 60}
               </div>
-              <div className="border px-4 py-2 rounded-lg text-sm">
+              <div className="border border-slate-200 rounded-2xl shadow-sm bg-white px-5 py-3 text-sm">
                 Buy 5+ for ₹{product.finalPrice - 80}
               </div>
             </div>
@@ -159,7 +161,7 @@ const ProductDetails = () => {
             <StockIndicator stock={product.stock} />
             <EmiCalculator price={product.finalPrice} />
 
-            <div className="border rounded-lg p-3">
+            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5">
               <p className="font-medium">{product.brand || "Dentaltech"}</p>
               <p className="text-sm text-blue-600 cursor-pointer">
                 View More Products
@@ -168,22 +170,31 @@ const ProductDetails = () => {
 
             <div className="flex items-center gap-4">
               <span>Quantity</span>
-              <div className="flex border rounded">
-                <button onClick={() => setQty(Math.max(1, qty - 1))}>
+              <div className="flex border border-slate-200 rounded-2xl shadow-sm bg-white overflow-hidden">
+                <button
+  className="px-4 py-2 hover:bg-slate-100"
+  onClick={() => setQty(Math.max(1, qty - 1))}
+>
                   <Minus size={16} />
                 </button>
                 <span className="px-4">{qty}</span>
-                <button onClick={() => setQty(qty + 1)}>
+                <button
+  className="px-4 py-2 hover:bg-slate-100"
+  onClick={() => setQty(qty + 1)}
+>
                   <Plus size={16} />
                 </button>
               </div>
             </div>
 
             <div className="flex gap-4">
-              <Button onClick={handleAddToCart} className="flex-1 bg-blue-600">
+              <Button
+  onClick={handleAddToCart}
+  className="flex-1 bg-blue-600 rounded-2xl shadow-sm h-12"
+>
                 Add to Cart
               </Button>
-              <Button className="flex-1 bg-orange-500">
+              <Button className="flex-1 bg-orange-500 rounded-2xl shadow-sm h-12">
                 Buy Now
               </Button>
             </div>
@@ -195,17 +206,17 @@ const ProductDetails = () => {
 
           {/* PAYMENT + BENEFITS */}
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="border rounded-xl p-4">
+            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5">
               <h3 className="font-semibold mb-3">Payment Options</h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="border p-2 rounded">COD</div>
-                <div className="border p-2 rounded">UPI</div>
-                <div className="border p-2 rounded">Cards</div>
-                <div className="border p-2 rounded">EMI</div>
+                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">COD</div>
+                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">UPI</div>
+                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">Cards</div>
+                <div className="border border-slate-200 rounded-2xl bg-slate-50 p-3 text-center">EMI</div>
               </div>
             </div>
 
-            <div className="border rounded-xl p-4">
+            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5">
               <h3 className="font-semibold mb-3">Benefits</h3>
               <ul className="text-sm space-y-1">
                 <li>✔ 100% Genuine</li>
@@ -219,7 +230,7 @@ const ProductDetails = () => {
           {/* Q&A */}
           <div>
             <h3 className="font-semibold">Questions & Answers</h3>
-            <div className="border p-4 rounded mt-3">
+            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5 mt-3">
               <p className="font-medium">Is it compatible with Noris implants?</p>
               <p className="text-sm text-gray-600 mt-2">
                 Yes, compatible with Noris systems.
@@ -230,7 +241,7 @@ const ProductDetails = () => {
           {/* REVIEWS */}
           <div>
             <h3 className="font-semibold">Ratings & Reviews</h3>
-            <div className="border p-4 rounded mt-3">
+            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5 mt-3">
               <p className="font-medium">User ⭐⭐⭐⭐⭐</p>
               <p className="text-sm text-gray-600">
                 Very useful and economical product
@@ -275,7 +286,7 @@ const Tabs = ({ product }: any) => {
   ];
 
   return (
-    <div className="border rounded-2xl shadow-sm p-5">
+    <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-6">
 
       {/* TAB HEADERS */}
       <div className="flex gap-6 border-b pb-3 text-sm overflow-x-auto">

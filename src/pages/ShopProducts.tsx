@@ -133,39 +133,39 @@ const ShopProducts = () => {
           <div className="flex gap-4 overflow-x-auto">
             {items.map((product) => (
               <div
-                key={product._id}
-                className="min-w-[200px] bg-white border rounded-xl p-3 shadow-sm hover:shadow-lg transition"
-              >
-                <img
-                  onClick={() => navigate(`/product/${product._id}`)}
-                  src={`http://localhost:8000${product.images?.[0]}`}
-                  className="h-36 w-full object-cover rounded cursor-pointer"
-                />
+  key={product._id}
+  className="min-w-[220px] bg-white border border-slate-200 rounded-3xl p-4 shadow-sm hover:shadow-md transition"
+>
+  <img
+    onClick={() => navigate(`/product/${product._id}`)}
+    src={`http://localhost:8000${product.images?.[0]}`}
+    className="h-40 w-full object-cover rounded-2xl cursor-pointer border border-slate-100"
+  />
 
-                <p className="mt-2 text-sm line-clamp-2">
-                  {product.name}
-                </p>
+  <p className="mt-3 text-sm line-clamp-2 font-medium">
+    {product.name}
+  </p>
 
-                <p className="text-green-600 font-semibold">
-                  ₹{product.finalPrice}
-                </p>
+  <p className="mt-1 text-green-600 font-semibold text-lg">
+    ₹{product.finalPrice}
+  </p>
 
-                <button
-                  onClick={() =>
-                    addToCart({
-                      id: product._id,
-                      name: product.name,
-                      price: product.finalPrice,
-                      image: product.images?.[0],
-                      shop: id,
-                      quantity: 1,
-                    })
-                  }
-                  className="mt-2 w-full bg-blue-600 text-white py-1 rounded hover:bg-blue-700"
-                >
-                  Add to Cart
-                </button>
-              </div>
+  <button
+    onClick={() =>
+      addToCart({
+        id: product._id,
+        name: product.name,
+        price: product.finalPrice,
+        image: product.images?.[0],
+        shop: id,
+        quantity: 1,
+      })
+    }
+    className="mt-3 w-full bg-blue-600 text-white py-2 rounded-2xl shadow-sm hover:bg-blue-700"
+  >
+    Add to Cart
+  </button>
+</div>
             ))}
           </div>
 

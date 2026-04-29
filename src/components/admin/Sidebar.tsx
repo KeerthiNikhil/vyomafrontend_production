@@ -34,10 +34,10 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
 }
 
   return (
-    <div className="w-64 bg-background text-foreground border-r border-border flex flex-col h-full">
+    <div className="w-72 bg-white rounded-[28px] shadow-sm text-foreground flex flex-col h-full">
       
       {/* Logo */}
-      <div className="p-4 sm:p-6 relative">
+      <div className="px-6 pt-7 pb-5 relative">
        
           <div className="flex items-center gap-3">
             <img 
@@ -64,7 +64,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       </div>
       
       {/* Navigation */}
-      <nav className="flex-1 px-2 sm:px-4 space-y-1 sm:space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-4 py-3 space-y-2 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -73,7 +73,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
            className={({ isActive }) =>
   `flex items-center px-3 py-1.5 h-9 rounded-md text-sm ${
     isActive
-      ? 'bg-primary text-primary-foreground'
+      ? 'bg-slate-900 text-white'
       : 'text-muted-foreground hover:bg-muted hover:text-foreground'
   }`
 }
@@ -85,7 +85,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       </nav>
       
       {/* Logout */}
-      <div className="p-3 sm:p-4 border-t border-border">
+      <div className="p-4 mt-auto">
         <Button
           variant="ghost"
           onClick={handleLogout}

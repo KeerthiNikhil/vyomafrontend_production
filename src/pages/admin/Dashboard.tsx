@@ -52,7 +52,10 @@ const Dashboard = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="shadow-sm rounded-xl bg-card text-card-foreground">
+          <Card
+  key={index}
+  className="rounded-3xl border border-slate-200 shadow-sm bg-white"
+>
             <CardContent className="p-2 flex items-center justify-between">
               <div className="space-y-0.5">
                 <p className="text-[11px] text-muted-foreground">{stat.title}</p>
@@ -71,7 +74,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Recent Activity */}
-        <Card className="h-72 bg-card text-card-foreground">
+        <Card className="h-72 rounded-3xl border border-slate-200 shadow-sm bg-white">
           <CardHeader className="p-3 pb-1">
             <CardTitle className="text-base">Recent Activity</CardTitle>
             <CardDescription className="text-xs text-muted-foreground">
@@ -86,7 +89,7 @@ const Dashboard = () => {
               { activity: 'New vendor approved', time: '1 hour ago', icon: Users },
               { activity: 'Banner updated', time: '2 hours ago', icon: Star },
             ].map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg">
+              <div key={idx} className="flex items-center justify-between px-4 py-4 bg-slate-100 rounded-2xl">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-background rounded-md">
                     <item.icon className="w-3.5 h-3.5 text-muted-foreground" />
@@ -100,7 +103,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Quick Stats */}
-        <Card className="h-72 bg-card text-card-foreground">
+        <Card className="h-72 rounded-3xl border border-slate-200 shadow-sm bg-white">
           <CardHeader className="p-3 pb-1">
             <CardTitle className="text-base">Quick Stats</CardTitle>
             <CardDescription className="text-xs text-muted-foreground">
@@ -116,7 +119,7 @@ const Dashboard = () => {
                 { label: "Banners", value: 5, color: "text-green-600" },
                 { label: "Low Stock", value: 12, color: "text-red-600" },
               ].map((item, i) => (
-                <div key={i} className="p-2 bg-muted rounded-md">
+                <div key={i} className="p-3 bg-slate-100 rounded-2xl">
                   <p className="text-xs text-muted-foreground">{item.label}</p>
                   <p className={`text-sm font-semibold ${item.color}`}>{item.value}</p>
                 </div>
@@ -131,7 +134,7 @@ const Dashboard = () => {
       <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Donut */}
-        <Card className="bg-card text-card-foreground shadow-sm rounded-xl h-78">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm h-78">
           <CardHeader className="p-3">
             <CardTitle className="text-base">Total Bill</CardTitle>
           </CardHeader>
@@ -165,7 +168,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Line */}
-        <Card className="bg-card text-card-foreground shadow-sm rounded-xl h-78">
+        <Card className="bg-white rounded-3xl border border-slate-200 shadow-sm h-78">
           <CardHeader className="p-3 flex justify-between items-center">
             <CardTitle className="text-base">Statistics</CardTitle>
             <span className="text-xs text-muted-foreground">Mar 2026</span>
@@ -188,7 +191,7 @@ const Dashboard = () => {
       </div>
 
       {/* Audience */}
-      <Card className="mt-6 bg-card text-card-foreground shadow-sm rounded-xl">
+      <Card className="mt-6 bg-white rounded-3xl border border-slate-200 shadow-sm">
         <CardHeader className="flex justify-between">
           <div>
             <CardTitle className="text-sm text-muted-foreground">Audience</CardTitle>

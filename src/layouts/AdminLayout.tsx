@@ -23,43 +23,57 @@ const AdminLayout = () => {
   }, [])
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-slate-100">
+      <div className="flex h-screen">
 
-      {/* Mobile Overlay */}
-      {isMobile && sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+        {/* overlay */}
+        {isMobile && sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-      {/* Sidebar */}
-      <div
-        className={`
-          ${isMobile 
-            ? `fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
-               ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
-            : 'relative'
-          }
-        `}
-      >
-        <Sidebar closeSidebar={() => setSidebarOpen(false)} />
-      </div>
+        {/* SIDEBAR BOX */}
+        <div
+          className={`
+            ${
+              isMobile
+                ? `fixed inset-y-4 left-4 z-50 transform transition-transform duration-300
+                   ${
+                     sidebarOpen
+                       ? "translate-x-0"
+                       : "-translate-x-full"
+                   }`
+                : "w-72 shrink-0"
+            }
+          `}
+        >
+          <Sidebar
+            closeSidebar={() => setSidebarOpen(false)}
+          />
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden w-full">
-        
-        {/* Header */}
-        <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        {/* RIGHT */}
+        <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-background">
-          <Outlet />
-        </main>
+        <div className="p-5 pb-0">
+  <Header
+    toggleSidebar={() =>
+      setSidebarOpen(!sidebarOpen)
+    }
+  />
+</div>
 
+          {/* CONTENT BOX */}
+          <main className="flex-1 bg-white rounded-[28px] shadow-sm overflow-y-auto p-8 m-5 mt-4">
+            <Outlet />
+          </main>
+
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminLayout
+export default AdminLayout;

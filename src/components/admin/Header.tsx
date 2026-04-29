@@ -14,8 +14,8 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
 
  
   return (
-    <header className="bg-background border-b border-border px-3 sm:px-6 py-3 sm:py-4">
-      <div className="flex items-center justify-between gap-2 sm:gap-4">
+    <header className="bg-white rounded-3xl shadow-sm px-6 h-20 flex items-center">
+      <div className="w-full flex items-center justify-between gap-4">
 
         {/* Left Section */}
         <div className="flex items-center gap-2 sm:gap-4">
@@ -42,7 +42,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
             <Input
               type="search"
               placeholder="Search..."
-              className="w-full pl-9 sm:pl-10 h-9 sm:h-10 text-sm sm:text-base"
+              className="w-full pl-10 h-12 text-base rounded-md border-slate-300"
             />
           </div>
         </div>
@@ -61,7 +61,12 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
         <div className="flex items-center gap-1 sm:gap-3">
 
           {/* 🌙 Dark Mode Toggle */}
-          <Button onClick={toggleTheme}>
+          <Button
+  variant="ghost"
+  size="icon"
+  onClick={toggleTheme}
+  className="rounded-md"
+>
   🌙
 </Button>
 
@@ -91,7 +96,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
 
       {/* Mobile Search */}
       {showMobileSearch && (
-        <div className="sm:hidden mt-3 pt-3 border-t border-border">
+        <div className="sm:hidden mt-3 pt-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input

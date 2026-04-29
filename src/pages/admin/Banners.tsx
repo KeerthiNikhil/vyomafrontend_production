@@ -339,7 +339,7 @@ const Banners = () => {
                             <img
                               src={imagePreview}
                               alt="Preview"
-                              className="w-full h-24 sm:h-32 object-cover"
+                              className="w-full h-32 sm:h-40 object-cover"
                             />
                             <Button
                               type="button"
@@ -563,8 +563,8 @@ const Banners = () => {
       </div>
 
       {/* Banner List */}
-      <Card className="w-full bg-card text-card-foreground shadow-sm">
-        <CardHeader className="p-3 sm:p-2">
+      <Card className="w-full bg-white rounded-3xl border border-slate-200 shadow-sm">
+        <CardHeader className="px-6 pt-6 pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="text-base font-semibold">Banner List</CardTitle>
@@ -573,7 +573,10 @@ const Banners = () => {
               </CardDescription>
             </div>
             <div className="mt-2 sm:mt-0">
-              <Badge variant="outline" className="text-xs sm:text-sm">
+              <Badge
+  variant="outline"
+  className="rounded-full border border-slate-200 bg-white px-4 py-1 text-sm font-medium"
+>
                 Total: {banners.length} banners
               </Badge>
             </div>
@@ -591,12 +594,15 @@ const Banners = () => {
               {/* Banner Grid - 4 cards per row on desktop, 2 on mobile */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {currentBanners.map((banner) => (
-                  <div key={banner.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div
+  key={banner.id}
+  className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition"
+>
                     <div className="relative">
                       <img 
                         src={banner.image} 
                         alt={banner.title} 
-                        className="w-full h-24 sm:h-32 object-cover"
+                        className="w-full h-32 sm:h-40 object-cover"
                       />
                       <div className="absolute top-1 right-1">
                         <Badge 
@@ -607,7 +613,7 @@ const Banners = () => {
                         </Badge>
                       </div>
                     </div>
-                   <div className="bg-card text-card-foreground rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                   <div className="p-4 border-t border-slate-100">
                       <h3 className="font-medium text-xs sm:text-sm text-gray-900 line-clamp-1">{banner.title}</h3>
                       <p className="text-[10px] sm:text-xstext-muted-foreground mb-0.5">
                         Priority: {banner.priority}
@@ -616,7 +622,7 @@ const Banners = () => {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="w-full xs:w-auto text-[10px] sm:text-xs h-7 sm:h-8 px-2"
+                          className="w-full rounded-2xl border border-slate-200 h-10"
                           onClick={() => openEditDialog(banner)}
                         >
                           <Edit className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
