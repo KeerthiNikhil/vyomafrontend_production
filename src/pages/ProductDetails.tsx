@@ -15,7 +15,7 @@ const ProductDetails = () => {
 
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
+  const [selectedUnit, setSelectedUnit] = useState<any>(null);
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
 
@@ -26,7 +26,14 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(`/products/${id}`);
-        setProduct(res.data.data);
+        const data = res.data.data;
+         console.log("PRODUCT =", data);
+
+setProduct(data);
+
+if (data.unitOptions?.length) {
+  setSelectedUnit(data.unitOptions[0]);
+}
       } catch (err) {
         console.log(err);
       }
@@ -41,11 +48,21 @@ const ProductDetails = () => {
 
   const images = product.images || [];
 
+  const currentPrice = Number(selectedUnit?.price || product.finalPrice || 0);
+const originalPrice = Number(product.price || currentPrice);
+const savedAmount = Math.max(0, originalPrice - currentPrice);
+
+const discountPercent =
+  originalPrice > 0
+    ? Math.round((savedAmount / originalPrice) * 100)
+    : 0;
+
   const handleAddToCart = async () => {
     await addToCart({
       id: product._id,
       name: product.name,
-      price: product.finalPrice,
+      price: selectedUnit?.price || product.finalPrice,
+unit: selectedUnit?.label || "",
       image: images?.[0],
       shop: product.shop,
       quantity: qty,
@@ -73,7 +90,8 @@ const ProductDetails = () => {
               : addToWishlist({
                   _id: product._id,
                   name: product.name,
-                  price: product.finalPrice,
+                  price: selectedUnit?.price || product.finalPrice,
+unit: selectedUnit?.label || "",
                   image: images?.[0],
                 })
           }
@@ -128,14 +146,25 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
               <span className="text-sm text-gray-600">4.4 (78 reviews)</span>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold">₹{product.finalPrice}</span>
-              <span className="line-through text-base text-slate-400">₹{product.price}</span>
-              <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-sm font-medium">
-                {Math.round((product.discountValue / product.price) * 100)}% off
-              </span>
-              <span className="text-yellow-500 text-sm">🪙 149</span>
-            </div>
+           <div className="flex items-center gap-3 flex-wrap">
+  <span className="text-3xl font-bold">
+    ₹{currentPrice}
+  </span>
+
+  {originalPrice > currentPrice && (
+    <>
+      <span className="line-through text-base text-slate-400">
+        ₹{originalPrice}
+      </span>
+
+      <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-sm font-medium">
+        {discountPercent}% off
+      </span>
+    </>
+  )}
+
+  <span className="text-yellow-500 text-sm">🪙 149</span>
+</div>
 
           
 
@@ -155,6 +184,34 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 
             <StockIndicator stock={product.stock} />
             
+           {product.unitOptions?.length > 0 && (
+  <div className="space-y-3">
+    <p className="font-medium text-slate-800">
+      Select Option
+    </p>
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {product.unitOptions.map((unit:any, i:number) => (
+        <button
+          key={i}
+          onClick={() => setSelectedUnit(unit)}
+          className={`rounded-2xl border p-4 text-center transition ${
+            selectedUnit?.label === unit.label
+              ? "border-blue-600 bg-blue-50"
+              : "border-slate-200 bg-white hover:border-blue-300"
+          }`}
+        >
+          <p className="font-semibold">
+            {unit.label}
+          </p>
+          <p className="text-sm text-slate-500">
+            ₹{unit.price}
+          </p>
+        </button>
+      ))}
+    </div>
+  </div>
+)}
 
             <div className="flex items-center gap-4">
               <span>Quantity</span>
@@ -214,13 +271,13 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
     <div className="space-y-2 text-sm">
       <div className="flex justify-between">
         <span>Item Total</span>
-        <span>₹{product.price}</span>
+        <span>₹{originalPrice}</span>
       </div>
 
       <div className="flex justify-between text-green-600 font-medium">
         <span>Saved</span>
         <span>
-          ₹{product.price - product.finalPrice}
+          ₹{savedAmount}
         </span>
       </div>
     </div>
@@ -311,7 +368,7 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
       <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white/95 backdrop-blur-md px-6 py-4 flex justify-between items-center z-50">
         <div>
           <p className="text-sm">{product.name}</p>
-          <p className="font-bold">₹{product.finalPrice}</p>
+          <p className="font-bold">₹{selectedUnit?.price || product.finalPrice}</p>
         </div>
         <button
           onClick={handleAddToCart}
@@ -328,69 +385,50 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 export default ProductDetails;
 
 const Tabs = ({ product }: any) => {
-  const [active, setActive] = useState("Features");
+  const [active, setActive] = useState("");
 
-  const tabs = [
-    "Features",
-    "Description",
-    "Key Specifications",
-    "Packaging",
-    "Direction To Use",
-    "Additional Info",
-    "Warranty",
-  ];
-return (
-  <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2">
-    {tabs.map((tab) => (
-      <div
-        key={tab}
-        className="border-b border-slate-200 last:border-b-0"
-      >
-        <button
-          onClick={() => setActive(active === tab ? "" : tab)}
-          className="w-full py-3 px-2 flex items-center justify-between text-left"
+  const tabs = product.productDetails || [];
+
+  if (!tabs.length) return null;
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl p-4">
+      {tabs.map((tab: any, index: number) => (
+        <div
+          key={index}
+          className="border-b border-slate-200 last:border-b-0"
         >
-          <span className="text-sm font-medium text-slate-700">
-            {tab}
-          </span>
+          <button
+            onClick={() =>
+              setActive(
+                active === tab.title
+                  ? ""
+                  : tab.title
+              )
+            }
+            className="w-full py-4 flex justify-between items-center text-left"
+          >
+            <span className="font-medium text-slate-800">
+              {tab.title}
+            </span>
 
-          <ChevronDown
-            size={15}
-            className={`transition-all duration-200 ${
-              active === tab
-                ? "rotate-180 text-slate-600"
-                : "text-slate-400"
-            }`}
-          />
-        </button>
+            <ChevronDown
+              size={16}
+              className={`transition ${
+                active === tab.title
+                  ? "rotate-180"
+                  : ""
+              }`}
+            />
+          </button>
 
-        {active === tab && (
-          <div className="pb-3 px-2 text-xs leading-6 text-slate-500">
-            {tab === "Features" && (
-              <ul className="list-disc ml-4 space-y-1">
-                <li>Compatible with multiple implant systems</li>
-                <li>Precision torque ratchet</li>
-                <li>Color-coded drivers</li>
-              </ul>
-            )}
-
-            {tab === "Description" && product.description}
-
-            {tab === "Key Specifications" && (
-              <div className="space-y-1">
-                <p>Brand: {product.brand}</p>
-                <p>Stock: {product.stock}</p>
-              </div>
-            )}
-
-            {tab === "Packaging" && <p>Comes in organized box packaging</p>}
-            {tab === "Direction To Use" && <p>Use as per clinical guidelines</p>}
-            {tab === "Additional Info" && <p>High durability and corrosion resistant</p>}
-            {tab === "Warranty" && <p>1 Year Manufacturer Warranty</p>}
-          </div>
-        )}
-      </div>
-    ))}
-  </div>
-);
+          {active === tab.title && (
+            <div className="pb-4 text-sm text-slate-600 whitespace-pre-line">
+              {tab.content}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 };

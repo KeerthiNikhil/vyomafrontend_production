@@ -23,8 +23,6 @@ const AddProduct = () => {
   const [discountType,setDiscountType] = useState("");
   const [discountValue,setDiscountValue] = useState("");
 
-  const [units,setUnits] = useState("");
-
   const [images,setImages] = useState<File[]>([]);
 
   const [file,setFile] = useState<any>(null);
@@ -41,7 +39,12 @@ const AddProduct = () => {
   const [deliveryTime, setDeliveryTime] = useState("");
 const [returnPolicy, setReturnPolicy] = useState("");
 const [codAvailable, setCodAvailable] = useState(true);
-
+const [unitOptions, setUnitOptions] = useState<any[]>([
+  { label: "", price: "" }
+]);
+const [productDetails, setProductDetails] = useState([
+  { title: "", content: "" }
+]);
   /* ================= GET SHOPS ================= */
 
   useEffect(()=>{
@@ -116,12 +119,29 @@ const [selectedSubCategory, setSelectedSubCategory] = useState("");
 
   const handleSubmit = async()=>{
 
-    if(!shopId || !name || !category || !price || !stock){
+   if (!shopId || !name || !category || !stock) {
+  toast.error("Fill required fields");
+  return;
+}
 
-      toast.error("Fill required fields");
-      return;
+const mergedUnits = [
+  ...(weight && price
+    ? [{ label: weight, price }]
+    : []),
+  ...unitOptions,
+];
 
-    }
+const validUnits = mergedUnits.filter(
+  (u: any) => u.label && u.price
+);
+
+
+console.log("VALID UNITS =", validUnits);
+
+if (!validUnits.length) {
+  toast.error("Add at least one unit option");
+  return;
+}
 
     try{
 
@@ -131,13 +151,28 @@ const [selectedSubCategory, setSelectedSubCategory] = useState("");
       formData.append("name",name);
       formData.append("category",category);
       formData.append("subCategory", selectedSubCategory);
-      formData.append("price",price);
+      const basePrice =
+  validUnits.length > 0
+    ? validUnits[0].price
+    : price;
+
+formData.append("price", String(basePrice));
       formData.append("stock",stock);
       formData.append("description",description);
       formData.append("discountType",discountType);
       formData.append("discountValue",discountValue);
-      formData.append("units",units);
-
+      formData.append(
+  "unitOptions",
+  JSON.stringify(validUnits)
+);;
+formData.append(
+  "productDetails",
+  JSON.stringify(
+    productDetails.filter(
+      (x) => x.title && x.content
+    )
+  )
+);
       images.forEach((img)=>{
         formData.append("images",img);
       });
@@ -388,11 +423,6 @@ onChange={(e)=>setName(e.target.value)}
 <div className="grid md:grid-cols-2 gap-4">
   <div className="grid md:grid-cols-3 gap-4">
 
-  <Input
-    placeholder="Delivery Time (30 mins / 2 days)"
-    value={deliveryTime}
-    onChange={(e) => setDeliveryTime(e.target.value)}
-  />
 
   <Input
     placeholder="Return Policy (No Return / 7 Days Return)"
@@ -403,7 +433,7 @@ onChange={(e)=>setName(e.target.value)}
   <select
     value={codAvailable ? "yes" : "no"}
     onChange={(e) => setCodAvailable(e.target.value === "yes")}
-    className="border rounded-md px-3 py-2"
+    className="border rounded-md px-1 py-1"
   >
     <option value="yes">COD Available</option>
     <option value="no">No COD</option>
@@ -411,12 +441,7 @@ onChange={(e)=>setName(e.target.value)}
 
 </div>
 
-<Input
-type="number"
-placeholder="Price"
-value={price}
-onChange={(e)=>setPrice(e.target.value)}
-/>
+
 
 <Input
 type="number"
@@ -429,18 +454,121 @@ onChange={(e)=>setStock(e.target.value)}
 
 
 <Textarea
-placeholder="Description"
-value={description}
-onChange={(e)=>setDescription(e.target.value)}
+  placeholder="Description"
+  value={description}
+  onChange={(e)=>setDescription(e.target.value)}
 />
+<div className="space-y-3">
+  <p className="font-medium text-lg">
+    Product Information Sections
+  </p>
+
+  <p className="text-sm text-gray-500">
+    Example: Features, Ingredients, Warranty, Usage, Specifications
+  </p>
+
+  {productDetails.map((item, index) => (
+    <div key={index} className="space-y-2 border rounded-xl p-4">
+
+      <Input
+        placeholder="Section title (Features / Warranty / Ingredients)"
+        value={item.title}
+        onChange={(e) => {
+          const updated = [...productDetails];
+          updated[index].title = e.target.value;
+          setProductDetails(updated);
+        }}
+      />
+
+      <Textarea
+        placeholder="Enter details..."
+        value={item.content}
+        onChange={(e) => {
+          const updated = [...productDetails];
+          updated[index].content = e.target.value;
+          setProductDetails(updated);
+        }}
+      />
+    </div>
+  ))}
+
+  <Button
+    type="button"
+    variant="outline"
+    onClick={() =>
+      setProductDetails([
+        ...productDetails,
+        { title: "", content: "" }
+      ])
+    }
+  >
+    + Add Section
+  </Button>
+</div>
+
+<div className="grid grid-cols-2 gap-3">
+  <Input
+    placeholder="Base Unit (500g / 1L / 1 piece)"
+    value={weight}
+    onChange={(e) => setWeight(e.target.value)}
+  />
+
+  <Input
+    type="number"
+    placeholder="Base Price"
+    value={price}
+    onChange={(e) => setPrice(e.target.value)}
+  />
+</div>
 
 
-<Input
-placeholder="Units (example: 500g,1kg or S,M,L)"
-value={units}
-onChange={(e)=>setUnits(e.target.value)}
-/>
+<div className="space-y-3">
+  <p className="font-medium">
+  Product Variants
+</p>
 
+<p className="text-sm text-gray-500">
+  Example: 500g, 1L, Small, Medium, XL, 64GB, Black, Paperback
+</p>
+
+  {unitOptions.map((unit, index) => (
+    <div key={index} className="grid grid-cols-2 gap-3">
+      <Input
+        placeholder="Variant (500g / 1L / M / 64GB / Black)"
+        value={unit.label}
+        onChange={(e) => {
+          const updated = [...unitOptions];
+          updated[index].label = e.target.value;
+          setUnitOptions(updated);
+        }}
+      />
+
+      <Input
+        type="number"
+        placeholder="Price"
+        value={unit.price}
+        onChange={(e) => {
+          const updated = [...unitOptions];
+          updated[index].price = e.target.value;
+          setUnitOptions(updated);
+        }}
+      />
+    </div>
+  ))}
+
+  <Button
+    type="button"
+    variant="outline"
+    onClick={() =>
+      setUnitOptions([
+        ...unitOptions,
+        { label: "", price: "" },
+      ])
+    }
+  >
+    + Add Unit
+  </Button>
+</div>
 
 <div className="grid md:grid-cols-2 gap-4">
 
