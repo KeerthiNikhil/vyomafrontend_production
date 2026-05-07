@@ -1,109 +1,64 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "@/lib/axios";
 import ProductCard from "@/components/products/ProductCard";
 
-/* product images */
-import p1 from "@/assets/images/product/redchilli.jpg";
-import p2 from "@/assets/images/product/turmeric.jpg";
-import p3 from "@/assets/images/product/mobile.jpg";
-import p4 from "@/assets/images/product/laptop.jpg";
-import p5 from "@/assets/images/product/tablet.jpg";
-import p6 from "@/assets/images/product/vitamin.jpg";
-import p7 from "@/assets/images/product/books.jpg";
-import p8 from "@/assets/images/product/pen.jpg";
-import p9 from "@/assets/images/product/rice.jpg";
-import p10 from "@/assets/images/product/dal.jpg";
-import p11 from "@/assets/images/product/food1.jpg";
-import p12 from "@/assets/images/product/biriyani.jpg";
-
-/* ---------- TYPES ---------- */
-
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-};
-
-/* ---------- SHOP BASED PRODUCT DATA ---------- */
-
-const shopProducts: Record<string, Product[]> = {
-  "sri-lakshmi": [
-    { id: 1, name: "Basmati Rice", price: 450, image: p9, category: "rice" },
-    { id: 2, name: "Sona Masoori Rice", price: 380, image: p9, category: "rice" },
-    { id: 3, name: "Brown Rice", price: 420, image: p9, category: "rice" },
-
-    { id: 4, name: "Sunflower Oil", price: 180, image: p2, category: "oils" },
-    { id: 5, name: "Coconut Oil", price: 220, image: p2, category: "oils" },
-
-    { id: 6, name: "Chilli Powder", price: 120, image: p1, category: "spices" },
-    { id: 7, name: "Turmeric Powder", price: 90, image: p2, category: "spices" },
-
-    { id: 8, name: "Chicken Biriyani", price: 150, image: p12, category: "food" },
-  ],
-
-  "apollo-pharmacy": [
-    { id: 9, name: "Paracetamol", price: 30, image: p5, category: "pharmacy" },
-    { id: 10, name: "Vitamin Tablets", price: 120, image: p6, category: "pharmacy" },
-  ],
-};
-
-/* ---------- COMPONENT ---------- */
+const API = "http://localhost:8000";
 
 const CategoryProducts = () => {
-  const { id, slug } = useParams<{ id: string; slug: string }>();
+  const { slug } = useParams();
+  const [products, setProducts] = useState<any[]>([]);
 
-  // Scroll to top when page opens
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("/products");
 
-  // Get products for selected shop & category
-  const filteredProducts =
-    shopProducts[id as keyof typeof shopProducts]?.filter(
-      (item) => item.category === slug
-    ) || [];
+        const allProducts = res.data.data || [];
+
+        const filtered = allProducts.filter((p: any) =>
+          p.category
+            ?.toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/&/g, "and") === slug
+        );
+
+        setProducts(filtered);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchProducts();
+  }, [slug]);
 
   return (
-    <section className="py-6 sm:py-10 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="max-w-7xl mx-auto px-4 py-10">
+      <h1 className="text-3xl font-bold capitalize mb-8">
+        {slug?.replace(/-/g, " ")}
+      </h1>
 
-        {/* Heading */}
-        <h1 className="text-xl sm:text-2xl font-bold capitalize mb-5">
-          {slug?.replace("-", " ")} varieties
-        </h1>
-
-        {/* Empty State */}
-        {filteredProducts.length === 0 && (
-          <p className="text-gray-500 text-sm">
-            No products available in this category.
-          </p>
-        )}
-
-        {/* Products Grid */}
-        <div
-          className="
-            grid grid-cols-2
-            sm:grid-cols-3
-            md:grid-cols-4
-            lg:grid-cols-5
-            gap-4 sm:gap-6
-          "
-        >
-          {filteredProducts.map((item) => (
+      {products.length === 0 ? (
+        <p>No products found</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+          {products.map((product: any) => (
             <ProductCard
-              key={item.id}
-              id={item.id}
-              name={item.name}
-              price={item.price}
-              image={item.image}
+              key={product._id}
+              id={product._id}
+              name={product.name}
+              price={Math.max(product.finalPrice || 0, 0)}
+              image={
+                product.images?.[0]
+                  ? `${API}${product.images[0]}`
+                  : "/placeholder.png"
+              }
+              weight={product.unit || "200 g"}
             />
           ))}
         </div>
-
-      </div>  
-    </section>
+      )}
+    </div>
   );
 };
 

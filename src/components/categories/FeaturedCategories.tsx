@@ -1,67 +1,75 @@
+import { useEffect, useState } from "react";
+import axios from "@/lib/axios";
 import FeaturedCategoryCard from "./FeaturedCategoryCard";
 
-import spice from "@/assets/images/categories/spice.jpg";
-import electronic from "@/assets/images/categories/electronic.jpg";
-import pharmacy from "@/assets/images/categories/pharmacy.jpg";
-import stationary from "@/assets/images/categories/stationary.jpg";
-import local from "@/assets/images/categories/local.jpg";
-import foods from "@/assets/images/categories/foods.jpg";
+const API = "http://localhost:8000";
 
 const FeaturedCategories = () => {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("/products");
+        const products = res.data.data || [];
+
+        const grouped: Record<string, any[]> = {};
+
+        products.forEach((product: any) => {
+          const category = product.category || "Others";
+
+          if (!grouped[category]) grouped[category] = [];
+          grouped[category].push(product);
+        });
+
+        const formatted = Object.entries(grouped)
+          .map(([category, items]: any) => {
+            const random =
+              items[Math.floor(Math.random() * items.length)];
+
+            return {
+              title: category,
+              subtitle: `${items.length}+ Products`,
+              image: random.images?.[0]
+                ? `${API}${random.images[0]}`
+                : "/placeholder.png",
+              slug: category
+                .toLowerCase()
+                .replace(/\s+/g, "-")
+                .replace(/&/g, "and"),
+            };
+          })
+          .slice(0, 6);
+
+        setCategories(formatted);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (!categories.length) return null;
+
   return (
     <section className="pt-2 py-10 mb-0">
       <div className="max-w-7xl mx-auto px-0">
-
-       <h2 className="text-xl sm:text-2xl font-bold mb-1 pb-4">
-
+        <h2 className="text-xl sm:text-2xl font-bold mb-1 pb-4">
           Featured Categories
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
-          <FeaturedCategoryCard
-            title="Spices"
-            subtitle="Chilli, Turmeric, Masala"
-            image={spice}
-            slug="spices"
-          />
-
-          <FeaturedCategoryCard
-            title="Electronic Brands & Devices"
-            subtitle="Phones, Laptops, TVs"
-            image={electronic}
-            slug="electronics"
-          />
-
-          <FeaturedCategoryCard
-            title="Pharmacy Products"
-            subtitle="Medicines & Healthcare"
-            image={pharmacy}
-            slug="pharmacy"
-          />
-
-          <FeaturedCategoryCard
-            title="Stationary Products"
-            subtitle="Pens, Books, Office items"
-            image={stationary}
-            slug="stationary"
-          />
-
-          <FeaturedCategoryCard
-           title="General Stores"
-           subtitle="Grains, Milks, Medit & More"
-           image={local}
-           slug="general"
-           />
-
-           <FeaturedCategoryCard
-           title="Food and Beverages"
-           subtitle="Meals, Staters, Juice & More"
-           image={foods}
-           slug="food"
-           />
-
+          {categories.map((cat) => (
+            <FeaturedCategoryCard
+              key={cat.slug}
+              title={cat.title}
+              subtitle={cat.subtitle}
+              image={cat.image}
+              slug={cat.slug}
+            />
+          ))}
         </div>
-
       </div>
     </section>
   );

@@ -43,6 +43,7 @@ export const CartProvider = ({ children }: any) => {
   ? item.image.replace("//uploads", "/uploads")
   : `http://localhost:8000${item.image}`,
   quantity: item.quantity,
+  shop: item.shop,
 }));
 
     setCart(formatted);

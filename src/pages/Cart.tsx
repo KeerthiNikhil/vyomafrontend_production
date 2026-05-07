@@ -12,6 +12,12 @@ import { useCart } from "@/context/CartContext";
 const Cart = () => {
   const navigate = useNavigate();
 
+  const formatPrice = (value: number) =>
+    Number(value).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }); 
+
   const {
     cart,
     increaseQty,
@@ -19,13 +25,20 @@ const Cart = () => {
     removeFromCart,
   } = useCart();
 
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const subtotal = Number(
+  cart
+    .reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    )
+    .toFixed(2)
+);
 
-  const deliveryFee = subtotal > 499 ? 0 : 40;
-  const total = subtotal + deliveryFee;
+const deliveryFee = subtotal > 499 ? 0 : 40;
+
+const total = Number(
+  (subtotal + deliveryFee).toFixed(2)
+);
 
   if (cart.length === 0) {
     return (
@@ -97,7 +110,7 @@ const Cart = () => {
                 {/* RIGHT SIDE */}
                 <div className="flex flex-col items-end justify-center gap-5">
                   <p className="text-[14px] font-semibold text-slate-800">
-                    ₹{item.price * item.quantity}
+                    ₹{formatPrice(item.price * item.quantity)}
                   </p>
 
                   <div className="flex items-center rounded-lg overflow-hidden border h-10">
@@ -163,15 +176,15 @@ const Cart = () => {
 
               <div className="text-right">
                 <span className="font-semibold text-[12px] text-slate-800">
-                  Saved ₹{Math.round(saved)}
+                  Saved ₹{formatPrice(saved)}
                 </span>
 
                 <span className="line-through text-gray-400 text-[11px] mr-2">
-                  ₹{mrp}
+                  ₹{formatPrice(mrp)}
                 </span>
 
                 <span className="font-semibold text-[12px] text-slate-800">
-                  ₹{subtotal}
+                  ₹{formatPrice(subtotal)}
                 </span>
               </div>
             </div>
@@ -212,7 +225,7 @@ const Cart = () => {
               </div>
 
               <p className="font-semibold text-[12px] text-slate-800">
-                ₹{total}
+                ₹{formatPrice(total)}
               </p>
             </div>
           </div>
@@ -236,7 +249,7 @@ const Cart = () => {
           >
             <div className="text-left text-[11px] leading-5">
               <p>{cart.length} Items</p>
-              <p>TOTAL - ₹{total}</p>
+              <p>TOTAL - ₹{formatPrice(total)}</p>
             </div>
 
             <span>
@@ -261,7 +274,7 @@ const Cart = () => {
     </p>
 
     <p className="text-blue-700 font-semibold text-[12px] mt-2">
-      ₹{Math.round(subtotal * 0.35)}
+      ₹{formatPrice(subtotal * 0.35)}
     </p>
   </div>
 </div>

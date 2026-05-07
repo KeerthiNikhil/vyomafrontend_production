@@ -15,18 +15,29 @@ declare global {
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, fetchCart } = useCart();
-
+  const formatPrice = (value: number) =>
+  Number(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [openAddress, setOpenAddress] = useState(false);
 const [address, setAddress] = useState<any>(null);
 
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+ const subtotal = Number(
+  cart
+    .reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    )
+    .toFixed(2)
+);
 
-  const deliveryFee = subtotal > 499 ? 0 : 95;
-  const total = subtotal + deliveryFee;
+const deliveryFee = subtotal > 499 ? 0 : 95;
+
+const total = Number(
+  (subtotal + deliveryFee).toFixed(2)
+);
 
   const fetchAddress = async () => {
   try {
@@ -98,9 +109,14 @@ useEffect(() => {
       };
 
       new window.Razorpay(options).open();
-    } catch {
-      toast.error("Something went wrong ❌");
-    }
+    } catch (err: any) {
+  console.log("CHECKOUT ERROR 👉", err);
+  console.log("RESPONSE 👉", err?.response?.data);
+
+  toast.error(
+    err?.response?.data?.message || "Something went wrong ❌"
+  );
+}
   };
 
   return (
@@ -219,7 +235,9 @@ useEffect(() => {
 
               <div className="flex justify-between">
                 <span className="text-gray-600">Items Total</span>
-                <span className="font-medium">₹{subtotal}</span>
+                <span className="font-medium">
+  ₹{formatPrice(subtotal)}
+</span>
               </div>
 
               <div className="flex justify-between">
@@ -229,13 +247,17 @@ useEffect(() => {
                     FREE
                   </span>
                 ) : (
-                  <span>₹{deliveryFee}</span>
+                  <span>
+  ₹{formatPrice(deliveryFee)}
+</span>
                 )}
               </div>
 
               <div className="border-t pt-4 flex justify-between text-lg font-semibold">
                 <span>Total</span>
-                <span>₹{total}</span>
+                <span>
+  ₹{formatPrice(total)}
+</span>
               </div>
 
               <button

@@ -4,6 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "@/lib/axios";
 
+const inputStyle =
+  "h-12 rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
+
+const cardStyle =
+  "rounded-3xl border border-slate-200 shadow-sm bg-white";
+
+const buttonStyle =
+  "h-12 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-md text-white";
+
+const selectStyle =
+  "w-full h-12 px-5 rounded-2xl border border-slate-200 bg-white shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+
 const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [shops, setShops] = useState([]);
@@ -17,6 +29,7 @@ const [preview, setPreview] = useState("");
   shopName: "",
   address: "",
   shopId: "",
+  avatar: "",
 });
 
 const handleImageChange = (e: any) => {
@@ -65,13 +78,13 @@ const handleImageChange = (e: any) => {
       const firstShop = data.shops?.[0];
 
 setProfile({
-  name: data.user.name,
-  email: data.user.email,
-  phone: data.user.phone,
-
+  name: data.user.name || "",
+  email: data.user.email || "",
+  phone: data.user.phone || "",
   shopId: firstShop?._id || "",
   shopName: firstShop?.name || "",
   address: firstShop?.address || "",
+  avatar: data.user.avatar || "",
 });
 
 setShops(data.shops);
@@ -97,8 +110,10 @@ setShops(data.shops);
       </div>
 
      {/* PROFILE OVERVIEW */}
-<Card>
-  <CardContent className="p-6 flex items-center justify-between">
+<Card
+  className={cardStyle}>
+  <CardContent className="p-8 flex items-center justify-between">
+
 
     {/* LEFT SIDE */}
     <div className="flex items-center gap-5">
@@ -120,7 +135,8 @@ setShops(data.shops);
       </div>
 
       {editMode && (
-  <input type="file" onChange={handleImageChange} />
+  <input
+  className={inputStyle} type="file" onChange={handleImageChange} />
 )}
 
       {/* Store Info */}
@@ -149,19 +165,19 @@ setShops(data.shops);
       <Button
         variant="outline"
         size="sm"
-        className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
+        className={buttonStyle}
 
         onClick={() => setEditMode(!editMode)}
       >
         {editMode ? "Cancel" : "Edit Profile"}
       </Button>
     </div>
-
-  </CardContent>
+</CardContent>
 </Card>
       {/* ACCOUNT DETAILS */}
-      <Card>
-        <CardContent className="p-6 space-y-6">
+      <Card
+        className={cardStyle}>
+        <CardContent className="p-8 space-y-6">
 
           <h2 className="text-lg font-semibold">
             Account Information
@@ -170,18 +186,24 @@ setShops(data.shops);
           <div className="grid md:grid-cols-2 gap-6">
 
             <div>
-              <label>Shop Name</label>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+  Shop Name
+</label>
 <Input
+className={inputStyle}
   value={profile.shopName || ""}
   disabled={!editMode}
   onChange={(e) => handleChange("shopName", e.target.value)}
 />
 <select
+  className={selectStyle}
   value={profile.shopId}
   onChange={(e) => {
-   const selected = shops.find((s: any) => s._id === e.target.value);
+    const selected = shops.find(
+      (s: any) => s._id === e.target.value
+    );
 
-if (!selected) return; 
+    if (!selected) return;
 
     setProfile({
       ...profile,
@@ -204,6 +226,7 @@ if (!selected) return;
                 Email
               </label>
               <Input
+              className={inputStyle}
                 value={profile.email || ""}
                 disabled={!editMode}
                 onChange={(e) =>
@@ -217,6 +240,7 @@ if (!selected) return;
                 Phone
               </label>
               <Input
+              className={inputStyle}
                 value={profile.phone || ""}
                 disabled={!editMode}
                 onChange={(e) =>
@@ -230,6 +254,7 @@ if (!selected) return;
                 Address
               </label>
               <Input
+              className={inputStyle}
                 value={profile.address || ""}
                 disabled={!editMode}
                 onChange={(e) =>
@@ -243,7 +268,7 @@ if (!selected) return;
           {editMode && (
             <div className="flex justify-end">
               <Button
-  className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
+  className={buttonStyle}
 
   onClick={handleSave}
 >
@@ -258,8 +283,9 @@ if (!selected) return;
       {/* STORE STATS */}
       <div className="grid md:grid-cols-3 gap-6">
 
-        <Card>
-          <CardContent className="p-6">
+        <Card
+          className={cardStyle}>
+          <CardContent className="p-8">
             <p className="text-gray-500 text-sm">
               Total Products
             </p>
@@ -269,8 +295,9 @@ if (!selected) return;
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
+        <Card
+          className={cardStyle}>
+          <CardContent className="p-8">
             <p className="text-gray-500 text-sm">
               Total Orders
             </p>
@@ -280,8 +307,9 @@ if (!selected) return;
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
+        <Card
+          className={cardStyle}>
+          <CardContent className="p-8">
             <p className="text-gray-500 text-sm">
               Total Revenue
             </p>

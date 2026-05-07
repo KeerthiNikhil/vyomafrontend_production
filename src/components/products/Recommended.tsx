@@ -1,18 +1,16 @@
 import ProductCard from "@/components/products/ProductCard";
-import { products } from "@/data/products";
 
-const Recommended = () => {
-  const groceryProducts = products.filter(
-    (item) => item.category === "grocery"
-  );
+const API = "http://localhost:8000";
+
+const Recommended = ({ products = [] }: any) => {
+  if (!products.length) return null;
 
   return (
-    <section className="py-1 ">
+    <section className="py-2">
       <div className="max-w-7xl mx-auto px-0">
 
         <div className="mb-8">
           <h2 className="text-xl sm:text-2xl font-bold mb-1">
-
             Recommended For You
           </h2>
 
@@ -22,17 +20,20 @@ const Recommended = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
-
-          {groceryProducts.map((item) => (
-  <ProductCard
-    key={item.id}   // ✅ ADD THIS
-    id={item.id}
-    name={item.name}
-    price={item.price}
-    image={item.image}
-    weight="200 g"
-  />
-))}
+          {products.map((product: any) => (
+            <ProductCard
+              key={product._id}
+              id={product._id}
+              name={product.name}
+              price={Math.max(product.finalPrice || 0, 0)}
+              image={
+  product.images?.[0]?.startsWith("http")
+    ? product.images[0]
+    : `${API}${product.images?.[0]}`
+}
+              weight={product.unit || "200 g"}
+            />
+          ))}
         </div>
 
       </div>

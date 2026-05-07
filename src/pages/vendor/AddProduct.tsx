@@ -5,6 +5,54 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+const inputStyle =
+  "h-12 rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
+const textareaStyle =
+  "min-h-[120px] rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
+
+  const SelectField = ({
+  value,
+  onChange,
+  children,
+  disabled = false,
+}: any) => {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        className="
+  w-full h-12 px-5 pr-14
+  rounded-2xl
+  border border-slate-200
+  bg-gradient-to-b from-white to-slate-50
+  shadow-sm
+  appearance-none
+  outline-none
+  cursor-pointer
+  text-slate-800
+  font-medium
+  transition-all duration-200
+  hover:border-blue-300
+  hover:shadow-md
+  focus:border-blue-500
+  focus:ring-4 focus:ring-blue-100
+  disabled:bg-slate-100
+  disabled:text-slate-400
+  disabled:cursor-not-allowed
+"
+      >
+        {children}
+      </select>
+
+      <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs transition-all">
+  ▼
+</span>
+    </div>
+  );
+};
+
 const AddProduct = () => {
 
   const token = localStorage.getItem("token");
@@ -304,7 +352,7 @@ className={`${uploadType==="bulk"
 
 {uploadType==="bulk" &&(
 
-<div className="bg-white shadow-md rounded-xl p-8 space-y-5 border">
+<div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 md:p-10 space-y-6">
 
 <h2 className="text-lg font-semibold">
 
@@ -313,11 +361,11 @@ Upload Excel File
 </h2>
 
 
-<select
-value={shopId}
-onChange={(e)=>setShopId(e.target.value)}
-className="w-full border rounded-md px-3 py-2"
+<SelectField
+  value={shopId}
+  onChange={(e:any)=>setShopId(e.target.value)}
 >
+  
 
 <option value="">Select Shop</option>
 
@@ -327,7 +375,7 @@ className="w-full border rounded-md px-3 py-2"
 </option>
 ))}
 
-</select>
+</SelectField>
 
 
 <input
@@ -356,35 +404,34 @@ Upload Products
 
 {uploadType==="single" &&(
 
-<div className="bg-white shadow-md rounded-xl p-8 space-y-5 border">
+<div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 md:p-10 space-y-6">
 
-<select
-value={shopId}
-onChange={(e)=>setShopId(e.target.value)}
-className="w-full border rounded-md px-3 py-2"
+<SelectField
+  value={shopId}
+  onChange={(e:any)=>setShopId(e.target.value)}
 >
+  <option value="">Select Shop</option>
 
-<option value="">Select Shop</option>
+  {shops.map((shop) => (
+    <option key={shop._id} value={shop._id}>
+      {shop.shopName}
+    </option>
+  ))}
+</SelectField>
 
-{shops.map((shop)=>(
-<option key={shop._id} value={shop._id}>
-{shop.shopName}
-</option>
-))}
-
-</select>
 
 
 <Input
+className={inputStyle}
 placeholder="Product Name"
 value={name}
 onChange={(e)=>setName(e.target.value)}
 />
 
 
-<select
+<SelectField
   value={category}
-  onChange={(e) => {
+  onChange={(e:any) => {
     const selected = categories.find(
       (cat) => cat.name === e.target.value
     );
@@ -393,7 +440,6 @@ onChange={(e)=>setName(e.target.value)}
     setSubCategories(selected?.subCategories || []);
     setSelectedSubCategory("");
   }}
-  className="w-full border rounded-md px-3 py-2"
 >
   <option value="">Select Category</option>
 
@@ -402,12 +448,11 @@ onChange={(e)=>setName(e.target.value)}
       {cat.name}
     </option>
   ))}
-</select>
+</SelectField>
 
-<select
+<SelectField
   value={selectedSubCategory}
-  onChange={(e) => setSelectedSubCategory(e.target.value)}
-  className="w-full border rounded-md px-3 py-2"
+  onChange={(e:any)=>setSelectedSubCategory(e.target.value)}
   disabled={!category}
 >
   <option value="">Select Subcategory</option>
@@ -417,43 +462,60 @@ onChange={(e)=>setName(e.target.value)}
       {sub}
     </option>
   ))}
-</select>
+</SelectField>
 
 
-<div className="grid md:grid-cols-2 gap-4">
-  <div className="grid md:grid-cols-3 gap-4">
+<div className="grid md:grid-cols-3 gap-4">
 
+  {/* Return Policy */}
+  <div className="md:col-span-1">
+    <label className="text-sm font-medium text-slate-700 mb-2 block">
+      Return Policy
+    </label>
 
-  <Input
-    placeholder="Return Policy (No Return / 7 Days Return)"
-    value={returnPolicy}
-    onChange={(e) => setReturnPolicy(e.target.value)}
-  />
+    <Input
+      className={inputStyle}
+      placeholder="7 Days Return / No Return"
+      value={returnPolicy}
+      onChange={(e) => setReturnPolicy(e.target.value)}
+    />
+  </div>
 
-  <select
-    value={codAvailable ? "yes" : "no"}
-    onChange={(e) => setCodAvailable(e.target.value === "yes")}
-    className="border rounded-md px-1 py-1"
-  >
-    <option value="yes">COD Available</option>
-    <option value="no">No COD</option>
-  </select>
+  {/* COD */}
+  <div>
+    <label className="text-sm font-medium text-slate-700 mb-2 block">
+      Cash On Delivery
+    </label>
 
-</div>
+   <SelectField
+  value={codAvailable ? "yes" : "no"}
+  onChange={(e:any)=>setCodAvailable(e.target.value === "yes")}
+>
+  <option value="yes">✅ Available</option>
+  <option value="no">❌ Not Available</option>
+</SelectField>
+  </div>
 
+  {/* Stock */}
+  <div>
+    <label className="text-sm font-medium text-slate-700 mb-2 block">
+      Stock Quantity
+    </label>
 
-
-<Input
-type="number"
-placeholder="Stock"
-value={stock}
-onChange={(e)=>setStock(e.target.value)}
-/>
+    <Input
+    className={inputStyle}
+      type="number"
+      placeholder="100"
+      value={stock}
+      onChange={(e) => setStock(e.target.value)}
+    />
+  </div>
 
 </div>
 
 
 <Textarea
+  className={textareaStyle}
   placeholder="Description"
   value={description}
   onChange={(e)=>setDescription(e.target.value)}
@@ -468,9 +530,13 @@ onChange={(e)=>setStock(e.target.value)}
   </p>
 
   {productDetails.map((item, index) => (
-    <div key={index} className="space-y-2 border rounded-xl p-4">
+    <div
+  key={index}
+  className="space-y-3 bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm"
+>
 
       <Input
+      className={inputStyle}
         placeholder="Section title (Features / Warranty / Ingredients)"
         value={item.title}
         onChange={(e) => {
@@ -481,6 +547,7 @@ onChange={(e)=>setStock(e.target.value)}
       />
 
       <Textarea
+       className={textareaStyle}
         placeholder="Enter details..."
         value={item.content}
         onChange={(e) => {
@@ -494,7 +561,7 @@ onChange={(e)=>setStock(e.target.value)}
 
   <Button
     type="button"
-    variant="outline"
+    className="rounded-2xl h-11 px-5 border-slate-200 shadow-sm hover:bg-slate-50"
     onClick={() =>
       setProductDetails([
         ...productDetails,
@@ -508,12 +575,14 @@ onChange={(e)=>setStock(e.target.value)}
 
 <div className="grid grid-cols-2 gap-3">
   <Input
+    className={inputStyle}
     placeholder="Base Unit (500g / 1L / 1 piece)"
     value={weight}
     onChange={(e) => setWeight(e.target.value)}
   />
 
   <Input
+    className={inputStyle}
     type="number"
     placeholder="Base Price"
     value={price}
@@ -534,6 +603,7 @@ onChange={(e)=>setStock(e.target.value)}
   {unitOptions.map((unit, index) => (
     <div key={index} className="grid grid-cols-2 gap-3">
       <Input
+      className={inputStyle}
         placeholder="Variant (500g / 1L / M / 64GB / Black)"
         value={unit.label}
         onChange={(e) => {
@@ -544,6 +614,7 @@ onChange={(e)=>setStock(e.target.value)}
       />
 
       <Input
+        className={inputStyle}
         type="number"
         placeholder="Price"
         value={unit.price}
@@ -558,7 +629,7 @@ onChange={(e)=>setStock(e.target.value)}
 
   <Button
     type="button"
-    variant="outline"
+    className="rounded-2xl h-11 px-5 border-slate-200 shadow-sm hover:bg-slate-50"
     onClick={() =>
       setUnitOptions([
         ...unitOptions,
@@ -572,19 +643,17 @@ onChange={(e)=>setStock(e.target.value)}
 
 <div className="grid md:grid-cols-2 gap-4">
 
-<select
-value={discountType}
-onChange={(e)=>setDiscountType(e.target.value)}
-className="border rounded-md px-3 py-2"
+<SelectField
+  value={discountType}
+  onChange={(e:any)=>setDiscountType(e.target.value)}
 >
-
-<option value="">Discount Type</option>
-<option value="percentage">Percentage</option>
-<option value="flat">Flat</option>
-
-</select>
+  <option value="">Discount Type</option>
+  <option value="percentage">Percentage</option>
+  <option value="flat">Flat</option>
+</SelectField>
 
 <Input
+className={inputStyle}
 type="number"
 placeholder="Discount Value"
 value={discountValue}
@@ -602,13 +671,25 @@ Upload Product Images (Max 4)
 
 </p>
 
-<input
-type="file"
-multiple
-accept="image/*"
-onChange={handleImages}
-className="w-full border rounded-md px-3 py-2"
-/>
+<label className="block cursor-pointer">
+  <div className="h-28 rounded-3xl border-2 border-dashed border-slate-300 bg-gradient-to-b from-white to-slate-50 shadow-sm hover:border-blue-400 hover:bg-blue-50/30 transition flex flex-col items-center justify-center text-center px-4">
+    <span className="text-3xl mb-2">📷</span>
+    <p className="font-medium text-slate-700">
+      Upload Product Images
+    </p>
+    <p className="text-sm text-slate-500">
+      PNG / JPG / WEBP • Max 4 images
+    </p>
+  </div>
+
+  <input
+    type="file"
+    multiple
+    accept="image/*"
+    onChange={handleImages}
+    className="hidden"
+  />
+</label>
 <div className="flex gap-3 mt-3 flex-wrap">
   {images.map((img, index) => (
     <div key={index} className="relative">
@@ -640,7 +721,7 @@ className="w-full border rounded-md px-3 py-2"
 
 <Button
 onClick={handleSubmit}
-className="bg-blue-700 text-white px-6 py-2"
+className="h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-md"
 >
 
 Add Product

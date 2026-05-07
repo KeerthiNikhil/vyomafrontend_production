@@ -173,8 +173,16 @@ const ShopProducts = () => {
       ))}
 
       <NearbyShops />
-<HotSelling />
-<Recommended />
+
+<HotSelling
+  products={products.slice(0, 10)}
+/>
+
+<Recommended
+  products={[...products]
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 10)}
+/>
 
     </div>
   );

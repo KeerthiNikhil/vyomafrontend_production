@@ -73,7 +73,11 @@ function App() {
 
           <Route path="/shop/:id" element={<ShopProducts />} />
           <Route path="/search" element={<SearchPage />} />
-
+          
+          <Route
+  path="/category/:slug"
+  element={<CategoryProducts />}
+/>
           <Route
             path="/shop/:id/category/:slug"
             element={<CategoryProducts />}

@@ -7,24 +7,40 @@ import HotSelling from "@/components/products/HotSelling";
 import Recommended from "@/components/products/Recommended";
 import MidAdCarousel from "@/components/carousel/MidAdCarousel";
 import axios from "@/lib/axios";
-import NotificationCard from "@/components/NotificationCard";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import VendorWarningModal from "@/components/VendorWarningModal";
-import VendorSuccessModal from "@/components/VendorSuccessModal";
-import { toast } from "sonner";
 import VendorEntryModal from "@/components/VendorEntryModal";
-import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-const [showWarning, setShowWarning] = useState(false);
-const [showEntry, setShowEntry] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showEntry, setShowEntry] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("/products");
+        setProducts(res.data.data || []);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-const handleAgree = () => {
-  setShowWarning(false);
-  setShowEntry(true);
-}; 
-const navigate = useNavigate();
+    fetchProducts();
+  }, []);
+
+  const shuffledProducts = useMemo(() => {
+    return [...products].sort(() => Math.random() - 0.5);
+  }, [products]);
+
+  const hotSellingProducts = shuffledProducts.slice(0, 6);
+  const recommendedProducts = shuffledProducts.slice(6, 12);
+
+  const handleAgree = () => {
+    setShowWarning(false);
+    setShowEntry(true);
+  };
+
   return (
     <>
       <div className="p-4 text-right">
@@ -36,18 +52,16 @@ const navigate = useNavigate();
         </button>
       </div>
 
-      {/* 🔥 WARNING MODAL */}
       <VendorWarningModal
-  open={showWarning}
-  onClose={() => setShowWarning(false)}
-  onConfirm={handleAgree}
-/>
+        open={showWarning}
+        onClose={() => setShowWarning(false)}
+        onConfirm={handleAgree}
+      />
 
-      {/* 🔥 SUCCESS MODAL */}
       <VendorEntryModal
-  open={showEntry}
-  onClose={() => setShowEntry(false)}
-/>
+        open={showEntry}
+        onClose={() => setShowEntry(false)}
+      />
 
       <HeroCarousel />
       <ServiceHighlights />
@@ -55,8 +69,10 @@ const navigate = useNavigate();
       <TopShops />
       <MidAdCarousel />
       <NearbyShops />
-      <HotSelling />
-      <Recommended />
+
+      <HotSelling products={hotSellingProducts} />
+
+      <Recommended products={recommendedProducts} />
     </>
   );
 };

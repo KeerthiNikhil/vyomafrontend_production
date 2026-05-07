@@ -30,7 +30,9 @@ const FeaturedCategoryCard = ({ title, subtitle, image, slug }: Props) => {
         <h3 className="text-sm font-semibold">{title}</h3>
         <p className="text-xs opacity-90">{subtitle}</p>
 
-        <button className="mt-2 text-[11px] px-3 py-1 rounded-full bg-white text-black font-medium">
+        <button 
+        type="button"
+        className="mt-2 text-[11px] px-3 py-1 rounded-full bg-white text-black font-medium">
           SHOP NOW
         </button>
       </div>

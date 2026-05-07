@@ -8,11 +8,12 @@ import axios from "@/lib/axios";
 import { useWishlist } from "../context/WishlistContext";
 import StockIndicator from "@/components/products/StockIndicator";
 import EmiCalculator from "@/components/products/EmiCalculator";
+import { useNavigate } from "react-router-dom";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
-
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedUnit, setSelectedUnit] = useState<any>(null);
@@ -27,7 +28,10 @@ const ProductDetails = () => {
       try {
         const res = await axios.get(`/products/${id}`);
         const data = res.data.data;
-         console.log("PRODUCT =", data);
+
+console.log("PRODUCT =", data);
+console.log("SHOP =", data.shop);
+console.log("SHOP TYPE =", typeof data.shop);
 
 setProduct(data);
 
@@ -48,14 +52,45 @@ if (data.unitOptions?.length) {
 
   const images = product.images || [];
 
-  const currentPrice = Number(selectedUnit?.price || product.finalPrice || 0);
-const originalPrice = Number(product.price || currentPrice);
-const savedAmount = Math.max(0, originalPrice - currentPrice);
+  const currentPrice = Number(
+  selectedUnit?.price || product.finalPrice || 0
+);
 
-const discountPercent =
-  originalPrice > 0
-    ? Math.round((savedAmount / originalPrice) * 100)
-    : 0;
+const hasDiscount =
+  product.discountType &&
+  Number(product.discountValue) > 0;
+
+let originalPrice = currentPrice;
+let savedAmount = 0;
+let discountPercent = 0;
+
+if (hasDiscount) {
+  if (product.discountType === "percentage") {
+    originalPrice =
+      currentPrice +
+      (currentPrice * Number(product.discountValue)) / 100;
+
+    savedAmount =
+      originalPrice - currentPrice;
+
+    discountPercent =
+      Number(product.discountValue);
+  }
+
+  if (product.discountType === "flat") {
+    originalPrice =
+      currentPrice +
+      Number(product.discountValue);
+
+    savedAmount =
+      Number(product.discountValue);
+
+    discountPercent =
+      Math.round(
+        (savedAmount / originalPrice) * 100
+      );
+  }
+}
 
   const handleAddToCart = async () => {
     await addToCart({
@@ -64,11 +99,19 @@ const discountPercent =
       price: selectedUnit?.price || product.finalPrice,
 unit: selectedUnit?.label || "",
       image: images?.[0],
-      shop: product.shop,
+      shop: product.shop?._id || product.shop,
       quantity: qty,
     });
   };
+const handleGoToCart = async () => {
+  await handleAddToCart();
+  navigate("/cart");
+};
 
+const handleBuyNow = async () => {
+  await handleAddToCart();
+  navigate("/checkout");
+};
 
   return (
    <section className="max-w-7xl mx-auto px-4 lg:px-6 py-6 pb-24">
@@ -148,20 +191,20 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 
            <div className="flex items-center gap-3 flex-wrap">
   <span className="text-3xl font-bold">
-    ₹{currentPrice}
-  </span>
+  ₹{currentPrice}
+</span>
 
-  {originalPrice > currentPrice && (
-    <>
-      <span className="line-through text-base text-slate-400">
-        ₹{originalPrice}
-      </span>
+{hasDiscount && (
+  <>
+    <span className="line-through text-base text-slate-400">
+      ₹{Math.round(originalPrice)}
+    </span>
 
-      <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-sm font-medium">
-        {discountPercent}% off
-      </span>
-    </>
-  )}
+    <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-sm font-medium">
+      {discountPercent}% off
+    </span>
+  </>
+)}
 
   <span className="text-yellow-500 text-sm">🪙 149</span>
 </div>
@@ -265,23 +308,17 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 <div className="space-y-5 sticky top-24">
 
   {/* PRICE DETAILS */}
-  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
-    <h3 className="font-semibold mb-4">Price Details</h3>
+  <div className="flex justify-between">
+  <span>Item Total</span>
+  <span>₹{currentPrice * qty}</span>
+</div>
 
-    <div className="space-y-2 text-sm">
-      <div className="flex justify-between">
-        <span>Item Total</span>
-        <span>₹{originalPrice}</span>
-      </div>
-
-      <div className="flex justify-between text-green-600 font-medium">
-        <span>Saved</span>
-        <span>
-          ₹{savedAmount}
-        </span>
-      </div>
-    </div>
+{hasDiscount && (
+  <div className="flex justify-between text-green-600 font-medium">
+    <span>Saved</span>
+    <span>₹{savedAmount * qty}</span>
   </div>
+)}
 
  {/* OFFERS */}
 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
@@ -319,13 +356,19 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 </div>
 
   {/* BUTTONS */}
-  <Button className="w-full h-10 bg-blue-600 rounded-xl">
-    Go To Cart
-  </Button>
+  <Button
+  onClick={handleGoToCart}
+  className="w-full h-10 bg-blue-600 rounded-xl"
+>
+  Go To Cart
+</Button>
 
-  <Button className="w-full h-10 bg-orange-500 rounded-xl">
-    Buy Now
-  </Button>
+<Button
+  onClick={handleBuyNow}
+  className="w-full h-10 bg-orange-500 rounded-xl"
+>
+  Buy Now
+</Button>
 
   {/* PAYMENT */}
   <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
