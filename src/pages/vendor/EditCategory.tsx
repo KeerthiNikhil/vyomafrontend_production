@@ -132,7 +132,7 @@ const EditCategory = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10">
+    <div className="max-w-5xl mx-auto space-y-8 pb-20">
 
       {/* HEADER */}
       <div>
@@ -143,14 +143,42 @@ const EditCategory = () => {
       </div>
 
       {/* CATEGORY SELECT */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-lg">Select Category</h2>
+      <div className="
+bg-white
+border border-slate-200
+rounded-3xl
+shadow-sm
+p-8
+space-y-5
+">
+        <div className="border-b border-slate-100 pb-4">
+  <h2 className="font-semibold text-2xl text-slate-800">
+    Select Category
+  </h2>
+
+  <p className="text-sm text-slate-500 mt-1">
+    Choose category to edit
+  </p>
+</div>
 
         <div className="relative w-full">
   <select
     value={categoryId}
     onChange={(e) => handleCategoryChange(e.target.value)}
-    className="w-full border rounded-lg px-3 py-2 pr-10 text-sm appearance-none"
+    className="
+w-full
+h-14
+border border-slate-200
+rounded-2xl
+px-4
+pr-10
+text-sm
+bg-white
+appearance-none
+focus:ring-2
+focus:ring-blue-200
+outline-none
+"
   >
     {categories.map((cat) => (
       <option key={cat._id} value={cat._id}>
@@ -167,8 +195,23 @@ const EditCategory = () => {
       </div>
 
       {/* EDIT NAME */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-lg">Category Name</h2>
+      <div className="
+bg-white
+border border-slate-200
+rounded-3xl
+shadow-sm
+p-8
+space-y-5
+">
+        <div className="border-b border-slate-100 pb-4">
+  <h2 className="font-semibold text-2xl text-slate-800">
+    Category Name
+  </h2>
+
+  <p className="text-sm text-slate-500 mt-1">
+    Update your category title
+  </p>
+</div>
 
         <Input
           value={categoryName}
@@ -177,8 +220,23 @@ const EditCategory = () => {
       </div>
 
       {/* SUBCATEGORY */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-6">
-        <h2 className="font-semibold text-lg">Sub Categories</h2>
+      <div className="
+bg-white
+border border-slate-200
+rounded-3xl
+shadow-sm
+p-8
+space-y-6
+">
+        <div className="border-b border-slate-100 pb-4">
+  <h2 className="font-semibold text-2xl text-slate-800">
+    Sub Categories
+  </h2>
+
+  <p className="text-sm text-slate-500 mt-1">
+    Manage category sub items
+  </p>
+</div>
 
         <div className="flex gap-3">
           <Input
@@ -192,7 +250,16 @@ const EditCategory = () => {
 
           <Button
             onClick={handleAddSubCategory}
-           className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
+           className="
+px-8
+h-12
+rounded-2xl
+bg-blue-600
+hover:bg-blue-700
+text-white
+font-medium
+shadow-sm
+"
           >
             Add
           </Button>
@@ -202,7 +269,17 @@ const EditCategory = () => {
           {subCategories.map((sub, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 bg-blue-50 text-blue-800 px-4 py-2 rounded-full text-sm"
+              className="
+flex items-center gap-2
+bg-slate-100
+text-slate-700
+px-4 py-2
+rounded-2xl
+text-sm
+border border-slate-200
+hover:bg-slate-200
+transition
+"
             >
               {sub}
               <button onClick={() => handleRemoveSubCategory(index)}>
@@ -218,7 +295,16 @@ const EditCategory = () => {
         <Button
           variant="outline"
           onClick={handleDeleteCategory}
-          className="px-6 py-2 bg-red-700 text-white rounded-md"
+          className="
+px-8
+h-12
+rounded-2xl
+bg-red-600
+hover:bg-red-700
+text-white
+font-medium
+shadow-sm
+"
         >
           <Trash2 size={16} />
           Delete
@@ -226,7 +312,16 @@ const EditCategory = () => {
 
         <Button
           onClick={handleUpdate}
-          className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
+          className="
+px-8
+h-12
+rounded-2xl
+bg-blue-600
+hover:bg-blue-700
+text-white
+font-medium
+shadow-sm
+"
         >
           Update
         </Button>

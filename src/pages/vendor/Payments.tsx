@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
 import {
   BarChart,
   Bar,
@@ -14,7 +17,7 @@ import {
 } from "recharts";
 
 interface Payment {
-  id: number;
+  _id: string;
   orderId: string;
   amount: number;
   date: string;
@@ -22,63 +25,38 @@ interface Payment {
   status: "Paid" | "Pending";
 }
 
-const weeklyData = [
-  { day: "Mon", revenue: 1200 },
-  { day: "Tue", revenue: 900 },
-  { day: "Wed", revenue: 1500 },
-  { day: "Thu", revenue: 800 },
-  { day: "Fri", revenue: 1800 },
-  { day: "Sat", revenue: 2200 },
-  { day: "Sun", revenue: 1700 },
-];
-
-const monthlyData = [
-  { month: "Jan", revenue: 12000 },
-  { month: "Feb", revenue: 15000 },
-  { month: "Mar", revenue: 18000 },
-  { month: "Apr", revenue: 14000 },
-  { month: "May", revenue: 21000 },
-  { month: "Jun", revenue: 25000 },
-];
-
 const Payments = () => {
-  const [payments, setPayments] = useState<Payment[]>([
-    {
-      id: 1,
-      orderId: "#1024",
-      amount: 480,
-      date: "20 Mar 2025",
-      method: "UPI",
-      status: "Paid",
-    },
-    {
-      id: 2,
-      orderId: "#1025",
-      amount: 1250,
-      date: "19 Mar 2025",
-      method: "Card",
-      status: "Paid",
-    },
-    {
-      id: 3,
-      orderId: "#1026",
-      amount: 300,
-      date: "18 Mar 2025",
-      method: "COD",
-      status: "Pending",
-    },
-    {
-      id: 4,
-      orderId: "#1027",
-      amount: 950,
-      date: "17 Mar 2025",
-      method: "UPI",
-      status: "Pending",
-    },
-  ]);
+  const token = localStorage.getItem("token");
 
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [showPending, setShowPending] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // ================= FETCH PAYMENTS =================
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8000/api/v1/orders/vendor/payments",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setPayments(res.data.data || []);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPayments();
+  }, []);
+
+  // ================= TOTALS =================
   const totalRevenue = payments
     .filter((p) => p.status === "Paid")
     .reduce((acc, p) => acc + p.amount, 0);
@@ -87,153 +65,337 @@ const Payments = () => {
     (p) => p.status === "Pending"
   );
 
-  const handleMarkAsPaid = (id: number) => {
-    setPayments((prev) =>
-      prev.map((payment) =>
-        payment.id === id
-          ? { ...payment, status: "Paid" }
-          : payment
-      )
-    );
+  const pendingAmount = pendingPayments.reduce(
+    (acc, p) => acc + p.amount,
+    0
+  );
+
+  // ================= WEEKLY CHART =================
+  const weeklyData = useMemo(() => {
+    const map: any = {};
+
+    payments.forEach((p) => {
+      const day = new Date(p.date).toLocaleDateString("en-US", {
+        weekday: "short",
+      });
+
+      if (!map[day]) {
+        map[day] = 0;
+      }
+
+      map[day] += p.amount;
+    });
+
+    return Object.entries(map).map(([day, revenue]) => ({
+      day,
+      revenue,
+    }));
+  }, [payments]);
+
+  // ================= MONTHLY CHART =================
+  const monthlyData = useMemo(() => {
+    const map: any = {};
+
+    payments.forEach((p) => {
+      const month = new Date(p.date).toLocaleDateString("en-US", {
+        month: "short",
+      });
+
+      if (!map[month]) {
+        map[month] = 0;
+      }
+
+      map[month] += p.amount;
+    });
+
+    return Object.entries(map).map(([month, revenue]) => ({
+      month,
+      revenue,
+    }));
+  }, [payments]);
+
+  // ================= MARK AS PAID =================
+  const handleMarkAsPaid = async (id: string) => {
+    try {
+      await axios.put(
+        `http://localhost:8000/api/v1/orders/payment/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setPayments((prev) =>
+        prev.map((payment) =>
+          payment._id === id
+            ? { ...payment, status: "Paid" }
+            : payment
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+  // ================= WITHDRAW =================
+  const handleWithdraw = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/payments/withdraw",
+        {
+          amount: totalRevenue,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Payments</h1>
-        <p className="text-gray-500">
-          Track your earnings and revenue analytics
-        </p>
+      alert("Withdrawal request submitted ✅");
+    } catch (err) {
+      console.log(err);
+      alert("Withdrawal failed ❌");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-10 text-center">
+        Loading payments...
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Payments
+          </h1>
+
+          <p className="text-slate-500 mt-1">
+            Track your earnings and revenue analytics
+          </p>
+        </div>
+
+        {/* WITHDRAW BUTTON */}
+        <Button
+          onClick={handleWithdraw}
+          className="
+          h-12
+          px-8
+          rounded-2xl
+          bg-blue-600
+          hover:bg-blue-700
+          text-white
+          font-semibold
+          shadow-sm
+        "
+        >
+          Withdraw ₹{totalRevenue}
+        </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {/* SUMMARY */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        <Card className="bg-white">
-          <CardContent className="p-4">
-            <p className="text-gray-500 text-sm">Total Revenue</p>
-            <h2 className="text-2xl font-bold text-green-600">
+        {/* TOTAL REVENUE */}
+        <Card className="rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-6">
+            <p className="text-slate-500 text-sm">
+              Total Revenue
+            </p>
+
+            <h2 className="text-3xl font-bold text-green-600 mt-2">
               ₹{totalRevenue}
             </h2>
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
-          <CardContent className="p-4">
-            <p className="text-gray-500 text-sm">
+        {/* TRANSACTIONS */}
+        <Card className="rounded-3xl border border-slate-200 shadow-sm">
+          <CardContent className="p-6">
+            <p className="text-slate-500 text-sm">
               Total Transactions
             </p>
-            <h2 className="text-2xl font-bold">
+
+            <h2 className="text-3xl font-bold mt-2">
               {payments.length}
             </h2>
           </CardContent>
         </Card>
 
+        {/* PENDING */}
         <Card
           onClick={() => setShowPending(!showPending)}
-          className={`cursor-pointer transition ${
+          className={`
+          rounded-3xl
+          border
+          shadow-sm
+          cursor-pointer
+          transition
+          ${
             showPending
-              ? "bg-orange-50 border border-orange-400"
-              : "bg-white hover:shadow-md"
-          }`}
+              ? "bg-orange-50 border-orange-300"
+              : "bg-white border-slate-200 hover:shadow-md"
+          }
+        `}
         >
-          <CardContent className="p-4">
-            <p className="text-gray-500 text-sm">
+          <CardContent className="p-6">
+            <p className="text-slate-500 text-sm">
               Pending Payments
             </p>
-            <h2 className="text-2xl font-bold text-orange-500">
-              {pendingPayments.length}
+
+            <h2 className="text-3xl font-bold text-orange-500 mt-2">
+              ₹{pendingAmount}
             </h2>
+
+            <p className="text-sm text-slate-500 mt-2">
+              {pendingPayments.length} pending orders
+            </p>
           </CardContent>
         </Card>
 
       </div>
 
-      {/* Pending Table */}
+      {/* PENDING TABLE */}
       {showPending && (
-        <Card className="bg-white">
+        <Card className="rounded-3xl border border-slate-200 shadow-sm">
           <CardContent className="p-6">
-            <h2 className="font-semibold mb-4">
-              Pending Payment Details
-            </h2>
 
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="py-2">Order ID</th>
-                  <th>Date</th>
-                  <th>Method</th>
-                  <th>Amount</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
+            <div className="border-b border-slate-100 pb-4 mb-6">
+              <h2 className="text-2xl font-semibold">
+                Pending Payment Details
+              </h2>
 
-              <tbody>
-                {pendingPayments.map((payment) => (
-                  <tr key={payment.id} className="border-b">
-                    <td className="py-2">
-                      {payment.orderId}
-                    </td>
-                    <td>{payment.date}</td>
-                    <td>{payment.method}</td>
-                    <td className="text-orange-600 font-semibold">
-                      ₹{payment.amount}
-                    </td>
-                    <td>
-                      <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-                        onClick={() =>
-                          handleMarkAsPaid(payment.id)
-                        }
-                      >
-                        Mark as Paid
-                      </Button>
-                    </td>
+              <p className="text-sm text-slate-500 mt-1">
+                Orders awaiting payment confirmation
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+
+                <thead>
+                  <tr className="border-b text-left">
+                    <th className="py-4">Order ID</th>
+                    <th>Date</th>
+                    <th>Method</th>
+                    <th>Amount</th>
+                    <th>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {pendingPayments.map((payment) => (
+                    <tr
+                      key={payment._id}
+                      className="border-b"
+                    >
+                      <td className="py-4 font-medium">
+                        {payment.orderId}
+                      </td>
+
+                      <td>
+                        {new Date(
+                          payment.date
+                        ).toLocaleDateString()}
+                      </td>
+
+                      <td>{payment.method}</td>
+
+                      <td className="font-semibold text-orange-600">
+                        ₹{payment.amount}
+                      </td>
+
+                      <td>
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            handleMarkAsPaid(payment._id)
+                          }
+                          className="
+                          rounded-xl
+                          bg-blue-600
+                          hover:bg-blue-700
+                        "
+                        >
+                          Mark as Paid
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+              </table>
+            </div>
+
           </CardContent>
         </Card>
       )}
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* CHARTS */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-        <Card className="bg-white">
+        {/* WEEKLY */}
+        <Card className="rounded-3xl border border-slate-200 shadow-sm">
           <CardContent className="p-6">
-            <h2 className="font-semibold mb-4">
-              Weekly Revenue
-            </h2>
-            <ResponsiveContainer width="100%" height={250}>
+
+            <div className="border-b border-slate-100 pb-4 mb-6">
+              <h2 className="text-2xl font-semibold">
+                Weekly Revenue
+              </h2>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Revenue collected this week
+              </p>
+            </div>
+
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={weeklyData}>
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
+
                 <Bar
                   dataKey="revenue"
-                  fill="#3b82f6"
-                  radius={[6, 6, 0, 0]}
+                  fill="#2563eb"
+                  radius={[8, 8, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
+
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        {/* MONTHLY */}
+        <Card className="rounded-3xl border border-slate-200 shadow-sm">
           <CardContent className="p-6">
-            <h2 className="font-semibold mb-4">
-              Monthly Revenue
-            </h2>
-            <ResponsiveContainer width="100%" height={250}>
+
+            <div className="border-b border-slate-100 pb-4 mb-6">
+              <h2 className="text-2xl font-semibold">
+                Monthly Revenue
+              </h2>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Monthly sales analytics
+              </p>
+            </div>
+
+            <ResponsiveContainer width="100%" height={260}>
               <LineChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" />
+
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
+
                 <Line
                   type="monotone"
                   dataKey="revenue"
@@ -242,6 +404,7 @@ const Payments = () => {
                 />
               </LineChart>
             </ResponsiveContainer>
+
           </CardContent>
         </Card>
 

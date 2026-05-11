@@ -65,77 +65,155 @@ const AddCategory = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10">
+  <div className="max-w-5xl mx-auto space-y-8 pb-20">
 
-      {/* HEADER */}
-      <div>
-        <h1 className="text-3xl font-bold">Add Category</h1>
-        <p className="text-gray-500 mt-1">
-          Create product categories and subcategories
+    {/* HEADER */}
+    <div>
+      <h1 className="text-3xl font-bold">Add Category</h1>
+
+      <p className="text-slate-500 mt-1">
+        Create product categories and subcategories
+      </p>
+    </div>
+
+    {/* CATEGORY */}
+    <div
+      className="
+      bg-white
+      border border-slate-200
+      rounded-3xl
+      shadow-sm
+      p-8
+      space-y-5
+    "
+    >
+      <div className="border-b border-slate-100 pb-4">
+        <h2 className="font-semibold text-2xl text-slate-800">
+          Category
+        </h2>
+
+        <p className="text-sm text-slate-500 mt-1">
+          Create your main product category
         </p>
       </div>
 
-      {/* CATEGORY */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-lg">Category</h2>
+      <Input
+        placeholder="Enter Category Name"
+        value={categoryName}
+        onChange={(e) => setCategoryName(e.target.value)}
+        className="
+          h-14
+          rounded-2xl
+          border-slate-200
+          focus-visible:ring-blue-200
+        "
+      />
+    </div>
 
+    {/* SUB CATEGORY */}
+    <div
+      className="
+      bg-white
+      border border-slate-200
+      rounded-3xl
+      shadow-sm
+      p-8
+      space-y-6
+    "
+    >
+      <div className="border-b border-slate-100 pb-4">
+        <h2 className="font-semibold text-2xl text-slate-800">
+          Sub Categories
+        </h2>
+
+        <p className="text-sm text-slate-500 mt-1">
+          Add related sub categories
+        </p>
+      </div>
+
+      <div className="flex gap-3">
         <Input
-          placeholder="Enter Category Name"
-          value={categoryName}
-          onChange={(e) => setCategoryName(e.target.value)}
+          placeholder="Enter Subcategory Name"
+          value={subCategoryInput}
+          onChange={(e) => setSubCategoryInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAddSubCategory();
+          }}
+          className="
+            h-14
+            rounded-2xl
+            border-slate-200
+            focus-visible:ring-blue-200
+          "
         />
+
+        <Button
+          onClick={handleAddSubCategory}
+          className="
+            px-8
+            h-14
+            rounded-2xl
+            bg-blue-600
+            hover:bg-blue-700
+            text-white
+            font-medium
+            shadow-sm
+          "
+        >
+          Add
+        </Button>
       </div>
 
-      {/* SUBCATEGORY */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-6">
-        <h2 className="font-semibold text-lg">Sub Categories</h2>
-
-        <div className="flex gap-3">
-          <Input
-            placeholder="Enter Subcategory Name"
-            value={subCategoryInput}
-            onChange={(e) => setSubCategoryInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAddSubCategory();
-            }}
-          />
-
-          <Button
-            onClick={handleAddSubCategory}
-            className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
-
+      {/* LIST */}
+      <div className="flex flex-wrap gap-3">
+        {subCategories.map((sub, index) => (
+          <div
+            key={index}
+            className="
+              flex items-center gap-2
+              bg-slate-100
+              text-slate-700
+              px-4 py-2
+              rounded-2xl
+              text-sm
+              border border-slate-200
+              hover:bg-slate-200
+              transition
+            "
           >
-            Add
-          </Button>
-        </div>
+            {sub}
 
-        {/* LIST */}
-        <div className="flex flex-wrap gap-3">
-          {subCategories.map((sub, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 bg-blue-50 text-blue-800 px-4 py-2 rounded-full text-sm"
+            <button
+              onClick={() => handleRemoveSubCategory(index)}
             >
-              {sub}
-              <button onClick={() => handleRemoveSubCategory(index)}>
-                <X size={14} />
-              </button>
-            </div>
-          ))}
-        </div>
+              <X size={14} />
+            </button>
+          </div>
+        ))}
       </div>
+    </div>
 
-      {/* SUBMIT */}
+    {/* SUBMIT */}
+    <div className="flex justify-end">
       <Button
         onClick={handleSubmit}
-        className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
-
+        className="
+          px-8
+          h-12
+          rounded-2xl
+          bg-blue-600
+          hover:bg-blue-700
+          text-white
+          font-medium
+          shadow-sm
+        "
       >
         Submit Category
       </Button>
-
     </div>
-  );
+
+  </div>
+);
 };
 
 export default AddCategory;

@@ -144,13 +144,15 @@ unit: selectedUnit?.label || "",
         </button>
 
         <img
-          src={
-            images?.[activeImage]
-              ? `http://localhost:8000${images[activeImage]}`
-              : "/placeholder.png"
-          }
-          className="w-full h-[260px] object-contain mx-auto"
-        />
+  src={
+    images?.[activeImage]
+      ? images[activeImage].startsWith("http")
+        ? images[activeImage]
+        : `http://localhost:8000${images[activeImage]}`
+      : "/placeholder.png"
+  }
+  className="w-full h-[260px] object-contain mx-auto"
+/>
       </div>
 
       {/* THUMBNAILS */}
@@ -158,7 +160,11 @@ unit: selectedUnit?.label || "",
         {images.map((img: string, i: number) => (
           <img
             key={i}
-            src={`http://localhost:8000${img}`}
+            src={
+  img?.startsWith("http")
+    ? img
+    : `http://localhost:8000${img}`
+}
             onClick={() => setActiveImage(i)}
 className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-white p-1 transition ${              activeImage === i
   ? "border-blue-500 ring-4 ring-blue-100"
