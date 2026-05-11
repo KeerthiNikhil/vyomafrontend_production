@@ -5,6 +5,54 @@ import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import axios from "@/lib/axios";
 
+const inputStyle =
+  "h-12 rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
+
+const textareaStyle =
+  "min-h-[120px] rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
+const SelectField = ({
+  value,
+  onChange,
+  children,
+  disabled = false,
+}: any) => {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        className="
+          w-full h-12 px-5 pr-14
+          rounded-2xl
+          border border-slate-200
+          bg-gradient-to-b from-white to-slate-50
+          shadow-sm
+          appearance-none
+          outline-none
+          cursor-pointer
+          text-slate-800
+          font-medium
+          transition-all duration-200
+          hover:border-blue-300
+          hover:shadow-md
+          focus:border-blue-500
+          focus:ring-4 focus:ring-blue-100
+          disabled:bg-slate-100
+          disabled:text-slate-400
+          disabled:cursor-not-allowed
+        "
+      >
+        {children}
+      </select>
+
+      <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">
+        ▼
+      </span>
+    </div>
+  );
+};
+
 const ShopCreate = () => {
   const [step, setStep] = useState(1);
 
@@ -205,42 +253,45 @@ const ShopCreate = () => {
             {step === 1 && (
               <>
                 <Input
+                  className={inputStyle}
                   placeholder="Shop Name"
                   value={shopName}
                   onChange={(e)=>setShopName(e.target.value)}
                 />
 
                 <Input
+                className={inputStyle}
                   placeholder="Owner Name"
                   value={ownerName}
                   onChange={(e)=>setOwnerName(e.target.value)}
                 />
 
-                <select
-                  value={businessType}
-                  onChange={(e)=>setBusinessType(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 text-sm"
-                >
-                  <option value="">Select Business Type</option>
-                  <option>Food & Beverages</option>
-                  <option>Clothing</option>
-                  <option>Electronics</option>
-                  <option>Pharmacy</option>
-                  <option>Beauty & Personal Care</option>
-                  <option>Grocery</option>
-                  <option>Home Appliances</option>
-                  <option>Sports & Fitness</option>
-                  <option>Books</option>
-                  <option>Toys</option>
-                </select>
+                <SelectField
+  value={businessType}
+  onChange={(e:any)=>setBusinessType(e.target.value)}
+>
+  <option value="">Select Business Type</option>
+  <option>Food & Beverages</option>
+  <option>Clothing</option>
+  <option>Electronics</option>
+  <option>Pharmacy</option>
+  <option>Beauty & Personal Care</option>
+  <option>Grocery</option>
+  <option>Home Appliances</option>
+  <option>Sports & Fitness</option>
+  <option>Books</option>
+  <option>Toys</option>
+</SelectField>
 
                 <Textarea
+                 className={textareaStyle}
                   placeholder="Business Description"
                   value={description}
                   onChange={(e)=>setDescription(e.target.value)}
                 />
 
                 <Input
+                  className={inputStyle}
                   type="email"
                   placeholder="Business Email"
                   value={email}
@@ -248,6 +299,7 @@ const ShopCreate = () => {
                 />
 
                 <Input
+                  className={inputStyle}
                   placeholder="Shop Contact Number"
                   value={phone}
                   onChange={(e)=>setPhone(e.target.value)}
@@ -259,6 +311,7 @@ const ShopCreate = () => {
             {step === 2 && (
               <>
                 <Textarea
+                  className={textareaStyle}
                   placeholder="Shop Address"
                   value={address}
                   onChange={(e)=>setAddress(e.target.value)}
@@ -271,81 +324,123 @@ const ShopCreate = () => {
                   <MapPin size={16}/> Detect Location
                 </button>
 
-                <Input value={latitude} readOnly placeholder="Latitude"/>
-                <Input value={longitude} readOnly placeholder="Longitude"/>
+                <Input className={inputStyle} value={latitude} readOnly placeholder="Latitude"/>
+                <Input className={inputStyle} value={longitude} readOnly placeholder="Longitude"/>
 
-             <div className="space-y-3">
-  <label className="text-sm font-medium text-gray-700">
-    Upload Shop Images (Max 3) 🏪
+    <div className="space-y-3">
+
+  <label className="block cursor-pointer">
+    
+    <div
+      className="
+        h-28 rounded-3xl
+        border-2 border-dashed border-slate-300
+        bg-gradient-to-b from-white to-slate-50
+        shadow-sm
+        hover:border-blue-400
+        hover:bg-blue-50/30
+        transition
+        flex flex-col items-center justify-center
+      "
+    >
+      <span className="text-3xl mb-2">🏪</span>
+
+      <p className="font-medium text-slate-700">
+        Upload Shop Images
+      </p>
+
+      <p className="text-sm text-slate-500">
+        PNG / JPG / WEBP • Max 3 images
+      </p>
+    </div>
+
+    <input
+      type="file"
+      multiple
+      accept="image/*"
+      className="hidden"
+      onChange={(e) => {
+        if (!e.target.files) return;
+
+        const newFiles = Array.from(e.target.files);
+
+        setShopImages((prev) => {
+          const combined = [...prev, ...newFiles];
+
+          if (combined.length > 3) {
+            toast.error("Max 3 images allowed");
+            return prev;
+          }
+
+          return combined;
+        });
+      }}
+    />
+
   </label>
 
-  <input
-  type="file"
-  accept="image/*"
-  multiple
- onChange={(e) => {
-  if (!e.target.files) return;
 
-  const newFiles = Array.from(e.target.files);
 
-  setShopImages((prev) => {
-    const combined = [...prev, ...newFiles];
+  {/* IMAGE PREVIEW */}
+  <div className="flex gap-3 flex-wrap">
 
-    if (combined.length > 3) {
-      toast.error("Max 3 images allowed");
-      return prev;
-    }
+    {shopImages.map((file, index) => (
+      <div key={index} className="relative">
 
-    return combined;
-  });
-}}
-  className="w-full border rounded-md px-3 py-2"
-/>
+        <img
+          src={URL.createObjectURL(file)}
+          className="
+            h-20 w-20
+            object-cover
+            rounded-2xl
+            border border-slate-200
+            shadow-sm
+          "
+        />
 
-<div className="flex gap-3">
-  {shopImages.map((file, index) => (
-    <div key={index} className="relative">
-      <img
-        src={URL.createObjectURL(file)}
-        className="h-16 w-16 object-cover rounded-lg border"
-      />
+        <button
+          type="button"
+          onClick={() =>
+            setShopImages((prev) =>
+              prev.filter((_, i) => i !== index)
+            )
+          }
+          className="
+            absolute -top-2 -right-2
+            bg-red-500 text-white
+            w-5 h-5 rounded-full
+            text-xs shadow
+          "
+        >
+          ✕
+        </button>
 
-      <button
-        onClick={() =>
-          setShopImages((prev) =>
-            prev.filter((_, i) => i !== index)
-          )
-        }
-        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1"
-      >
-        ✕
-      </button>
-    </div>
-  ))}
-</div>
+      </div>
+    ))}
 
-{/* PREVIEW */}
-<div className="flex gap-3">
-  {shopImages.map((file, index) => (
-    <img
-      key={index}
-      src={URL.createObjectURL(file)}
-      className="h-16 w-16 object-cover rounded-lg border"
-    />
-  ))}
-</div>
+  </div>
 
-{/* 👉 BUTTON BELOW */}
-<button
-  onClick={addMoreImages}
-  className="w-full bg-blue-600 text-white py-2 rounded-md mt-2"
->
-  Upload Images
-</button>
+  <button
+    type="button"
+    onClick={addMoreImages}
+    className="
+      w-full h-12
+      rounded-2xl
+      bg-blue-600
+      hover:bg-blue-700
+      text-white
+      font-medium
+      shadow-md
+      transition
+    "
+  >
+    Upload Images
+  </button>
 
-  <p className="text-xs text-gray-500">
-    Upload up to 3 images (used for shop banner carousel)
+  <p className="text-xs text-slate-500">
+    Upload up to 3 images for shop banner carousel
   </p>
+
 </div>
               </>
             )}
@@ -354,26 +449,33 @@ const ShopCreate = () => {
             {step === 3 && (
               <>
                 <Input
+                  className={inputStyle}
                   placeholder="GST Number (Optional)"
                   value={gstNumber}
                   onChange={(e)=>setGstNumber(e.target.value)}
                 />
 
                 <Input
+                  className={inputStyle}
                   placeholder="Udyam Number"
                   value={udyamNumber}
                   onChange={(e)=>setUdyamNumber(e.target.value)}
                 />
 
                 <Input
-                  placeholder="FSSAI Number"
-                  value={fssaiNumber}
-                  onChange={(e)=>setFssaiNumber(e.target.value)}
-                  disabled={businessType !== "Food & Beverages"}
-                  className={businessType !== "Food & Beverages" ? "bg-gray-100 cursor-not-allowed" : ""}
-                />
+  className={`${inputStyle} ${
+    businessType !== "Food & Beverages"
+      ? "bg-slate-100 cursor-not-allowed"
+      : ""
+  }`}
+  placeholder="FSSAI Number"
+  value={fssaiNumber}
+  onChange={(e)=>setFssaiNumber(e.target.value)}
+  disabled={businessType !== "Food & Beverages"}
+/>
 
                 <Input
+                  className={inputStyle}
                   placeholder="Trade License Number"
                   value={tradeLicenseNumber}
                   onChange={(e)=>setTradeLicenseNumber(e.target.value)}
@@ -384,35 +486,70 @@ const ShopCreate = () => {
           </div>
 
           {/* BUTTONS */}
-          <div className="flex justify-between mt-6">
+<div className="flex justify-between gap-4 mt-8">
 
-            {step > 1 && (
-              <button
-                onClick={()=>setStep(step-1)}
-                className="px-4 py-2 border rounded-md"
-              >
-                ← Back
-              </button>
-            )}
+  {step > 1 ? (
+    <button
+      type="button"
+      onClick={() => setStep(step - 1)}
+      className="
+        flex-1 h-12
+        rounded-2xl
+        border border-slate-200
+        bg-white
+        text-slate-700
+        font-medium
+        shadow-sm
+        hover:bg-slate-50
+        hover:border-slate-300
+        transition
+      "
+    >
+      ← Back
+    </button>
+  ) : (
+    <div className="flex-1" />
+  )}
 
-            {step < 3 ? (
-              <button
-                onClick={()=>setStep(step+1)}
-                className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
-              >
-                Next →
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </button>
-            )}
+  {step < 3 ? (
+    <button
+      type="button"
+      onClick={() => setStep(step + 1)}
+      className="
+        flex-1 h-12
+        rounded-2xl
+        bg-blue-600
+        hover:bg-blue-700
+        text-white
+        font-medium
+        shadow-md
+        transition
+      "
+    >
+      Next →
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={handleSubmit}
+      disabled={isSubmitting}
+      className="
+        flex-1 h-12
+        rounded-2xl
+        bg-blue-600
+        hover:bg-blue-700
+        text-white
+        font-medium
+        shadow-md
+        transition
+        disabled:opacity-50
+      "
+    >
+      {isSubmitting ? "Submitting..." : "Submit"}
+    </button>
+  )}
 
-          </div>
+</div>
 
         </div>
       </div>

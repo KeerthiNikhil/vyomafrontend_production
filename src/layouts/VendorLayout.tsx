@@ -223,11 +223,88 @@ if (checkingAuth) {
           <Outlet />
         </main>
 
-        {/* Footer */}
-        <footer className="text-center text-sm text-gray-600 py-4 border-t bg-white">
-          <p>© 2026 VYOMA Marketplace. All Rights Reserved.</p>
-          <p>Developed by • Email: vinyasagroup@gmail.com</p>
-        </footer>
+       {/* Footer */}
+
+<footer
+  className="
+    bg-white
+    border-t
+    border-gray-200
+    px-6
+    py-6
+  "
+>
+
+  <div
+    className="
+      max-w-7xl
+      mx-auto
+      flex
+      flex-col
+      md:flex-row
+      items-center
+      justify-between
+      gap-4
+    "
+  >
+
+    {/* LEFT */}
+
+    <div>
+
+      <h2 className="text-lg font-bold text-blue-900">
+        VYOMA Vendor Panel
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-1">
+        Manage your products, orders, payments and growth.
+      </p>
+
+    </div>
+
+    {/* CENTER */}
+
+    <div
+      className="
+        flex
+        items-center
+        gap-6
+        text-sm
+        text-gray-600
+      "
+    >
+
+      <button className="hover:text-blue-600 transition">
+        Help Center
+      </button>
+
+      <button className="hover:text-blue-600 transition">
+        Privacy Policy
+      </button>
+
+      <button className="hover:text-blue-600 transition">
+        Terms
+      </button>
+
+    </div>
+
+    {/* RIGHT */}
+
+    <div className="text-sm text-gray-500 text-center md:text-right">
+
+      <p>
+        © {new Date().getFullYear()} VYOMA Marketplace
+      </p>
+
+      <p className="mt-1">
+        Built with ❤️ in Karnataka
+      </p>
+
+    </div>
+
+  </div>
+
+</footer>
 
       </div>
 

@@ -3,6 +3,7 @@ import axios from "axios";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 import {
   BarChart,
@@ -141,26 +142,47 @@ const Payments = () => {
 
   // ================= WITHDRAW =================
   const handleWithdraw = async () => {
-    try {
-      await axios.post(
-        "http://localhost:8000/api/v1/payments/withdraw",
-        {
-          amount: totalRevenue,
+
+  if (totalRevenue <= 0) {
+    toast.error("No balance available to withdraw");
+    return;
+  }
+
+  const confirmWithdraw = window.confirm(
+    `Withdraw ₹${totalRevenue} to your bank account?`
+  );
+
+  if (!confirmWithdraw) return;
+
+  try {
+
+    const res = await axios.post(
+      "http://localhost:8000/api/v1/payments/withdraw",
+      {
+        amount: totalRevenue,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      }
+    );
 
-      alert("Withdrawal request submitted ✅");
-    } catch (err) {
-      console.log(err);
-      alert("Withdrawal failed ❌");
-    }
-  };
+    toast.success(
+      res.data.message ||
+      `Withdrawal request for ₹${totalRevenue} submitted ✅`
+    );
 
+  } catch (err: any) {
+
+    toast.error(
+      err.response?.data?.message ||
+      "Withdrawal failed ❌"
+    );
+
+    console.log(err);
+  }
+};
   if (loading) {
     return (
       <div className="p-10 text-center">
@@ -172,35 +194,60 @@ const Payments = () => {
   return (
     <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
 
-      {/* HEADER */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">
-            Payments
-          </h1>
+     {/* HEADER */}
+<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-          <p className="text-slate-500 mt-1">
-            Track your earnings and revenue analytics
-          </p>
-        </div>
+  <div>
+    <h1 className="text-3xl font-bold">
+      Payments
+    </h1>
 
-        {/* WITHDRAW BUTTON */}
-        <Button
-          onClick={handleWithdraw}
-          className="
-          h-12
-          px-8
-          rounded-2xl
-          bg-blue-600
-          hover:bg-blue-700
-          text-white
-          font-semibold
-          shadow-sm
-        "
-        >
-          Withdraw ₹{totalRevenue}
-        </Button>
-      </div>
+    <p className="text-slate-500 mt-1">
+      Track your earnings and revenue analytics
+    </p>
+  </div>
+
+  {/* BUTTONS */}
+  <div className="flex justify-between items-center gap-4 flex-wrap">
+
+    {/* PENDING TOGGLE */}
+    <Button
+      variant="outline"
+      onClick={() => setShowPending(!showPending)}
+      className="
+        h-12 px-6
+        rounded-2xl
+        border-slate-200
+        shadow-sm
+        hover:bg-slate-100
+      "
+    >
+      {showPending
+        ? "Hide Pending Payments"
+        : `Pending (${pendingPayments.length})`}
+    </Button>
+
+    {/* WITHDRAW */}
+    <Button
+  onClick={handleWithdraw}
+  className="
+    h-12 px-8
+    rounded-2xl
+    bg-blue-600
+    hover:bg-blue-700
+    text-white
+    font-semibold
+    shadow-md
+    transition-all duration-200
+    disabled:cursor-not-allowed
+  "
+>
+  💸 Withdraw ₹{totalRevenue}
+</Button>
+
+  </div>
+
+</div>
 
       {/* SUMMARY */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -233,12 +280,11 @@ const Payments = () => {
 
         {/* PENDING */}
         <Card
-          onClick={() => setShowPending(!showPending)}
+          
           className={`
           rounded-3xl
           border
           shadow-sm
-          cursor-pointer
           transition
           ${
             showPending

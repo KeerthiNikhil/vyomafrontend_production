@@ -11,6 +11,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const inputStyle =
+  "h-12 rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
+
 const DeliveryBoys = () => {
 
   const [deliveryBoys, setDeliveryBoys] = useState<any[]>([]);
@@ -76,35 +79,74 @@ const DeliveryBoys = () => {
         <h1 className="text-3xl font-bold">Delivery Boys</h1>
 
         {/* ADD */}
-        <div className="bg-white shadow rounded-xl p-5 space-y-4">
+        <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 space-y-5">
           <h2 className="font-semibold">Add Delivery Boy</h2>
 
           <div className="grid md:grid-cols-4 gap-3">
-            <Input placeholder="Name"
-              value={newBoy.name}
-              onChange={(e)=>setNewBoy({...newBoy,name:e.target.value})}
-            />
+            <label className="block cursor-pointer">
+  <div
+    className="
+      h-12 px-4
+      rounded-2xl
+      border border-slate-200
+      bg-gradient-to-b from-white to-slate-50
+      shadow-sm
+      hover:border-blue-300
+      hover:bg-blue-50/30
+      transition
+      flex items-center
+      text-sm text-slate-500
+    "
+  >
+    📷 Upload Profile Image
+  </div>
 
-            <Input placeholder="Phone"
+  <input
+    type="file"
+    className="hidden"
+    onChange={(e)=>
+      setImage(e.target.files?.[0] || null)
+    }
+  />
+</label>
+
+            <Input 
+            className={inputStyle}
+            placeholder="Phone"
               value={newBoy.phone}
               onChange={(e)=>setNewBoy({...newBoy,phone:e.target.value})}
             />
 
-            <Input placeholder="Email"
+            <Input
+            className={inputStyle}
+            placeholder="Email"
               value={newBoy.email}
               onChange={(e)=>setNewBoy({...newBoy,email:e.target.value})}
             />
 
-            <input type="file"
+            <input
+            className={inputStyle}
+            type="file"
               onChange={(e)=>setImage(e.target.files?.[0] || null)}
-              className="border rounded-md px-2 py-2 text-sm"
+              
             />
           </div>
 
           <Button 
-          className="ml-auto px-6 py-2 bg-blue-700 text-white rounded-md"
-
-          onClick={handleAddBoy}>+ Add</Button>
+  className="
+    h-12 px-8
+    rounded-2xl
+    bg-blue-600
+    hover:bg-blue-700
+    text-white
+    font-semibold
+    shadow-md
+    transition-all duration-200
+  "
+  onClick={handleAddBoy}
+>
+  + Add Delivery Boy
+</Button>
         </div>
 
         {/* LIST */}

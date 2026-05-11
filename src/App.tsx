@@ -18,11 +18,12 @@ import Register from "@/pages/auth/Register";
 import ProductDetails from "@/pages/ProductDetails";
 import Wishlist from "@/components/products/Wishlist";
 import SearchPage from "./pages/SearchPage";
+import WalletPage from "@/pages/Wallet";
 // Vendor pages
 import VendorVerify from "@/pages/vendor/VendorVerify";
 import VendorDashboard from "@/pages/vendor/ShopDashboard";
 import CreateShop from "@/pages/vendor/ShopCreate";
-import Profile from "@/pages/vendor/Profile"; // ✅ ADD THIS
+import Profile from "@/pages/vendor/Profile"; 
 import AddProduct from "@/pages/vendor/AddProduct";
 import ManageProduct from "@/pages/vendor/ManageProduct";
 import AddCategory from "@/pages/vendor/AddCategory";
@@ -73,6 +74,7 @@ function App() {
 
           <Route path="/shop/:id" element={<ShopProducts />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/wallet" element={<WalletPage />} />
           
           <Route
   path="/category/:slug"

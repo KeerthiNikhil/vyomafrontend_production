@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { User, ShoppingCart, Search, Heart, LogOut } from "lucide-react";
-
+import { Wallet } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
@@ -12,7 +12,7 @@ import logo from "@/assets/images/logo.jpg.png";
 const Navbar = () => {
 
   const navigate = useNavigate();
-
+  const [walletBalance, setWalletBalance] = useState(0);
   const { cart } = useCart();
   const { wishlist } = useWishlist();
 
@@ -36,18 +36,26 @@ const Navbar = () => {
 
   /* Get User */
 
-  useEffect(() => {
+ useEffect(() => {
 
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    if (token) {
-      setUser({
-        name: localStorage.getItem("name") || "",
-        role: localStorage.getItem("role") || "",
-      });
-    }
+  if (token) {
 
-  }, [window.location.pathname]);
+    setUser({
+      name: localStorage.getItem("name") || "",
+      role: localStorage.getItem("role") || "",
+    });
+
+    // ✅ Dynamic wallet balance
+    const savedWallet =
+      localStorage.getItem("walletBalance");
+
+    setWalletBalance(Number(savedWallet) || 0);
+
+  }
+
+}, [window.location.pathname]);
 
   /* Logout */
 
@@ -179,6 +187,33 @@ flex items-center justify-center
 
 </Link>
 
+{/* Vyoma Wallet */}
+
+<Link to="/wallet">
+
+<Button
+variant="ghost"
+className="
+hidden sm:flex
+items-center gap-2
+px-4 py-2
+rounded-full
+bg-blue-50
+hover:bg-blue-100
+text-blue-700
+font-medium
+"
+>
+
+<Wallet className="w-4 h-4" />
+
+<span className="text-sm">
+₹{walletBalance}
+</span>
+
+</Button>
+
+</Link>
 
 {/* User */}
 
@@ -283,6 +318,24 @@ flex items-center justify-center
 
 </div>
 
+{/* MOBILE WALLET */}
+
+<Link to="/wallet" className="sm:hidden">
+
+<Button
+variant="ghost"
+className="
+p-2 rounded-full
+relative
+hover:bg-blue-50
+"
+>
+
+<Wallet className="w-5 h-5 text-blue-700" />
+
+</Button>
+
+</Link>
 
 {/* MOBILE SEARCH */}
 
