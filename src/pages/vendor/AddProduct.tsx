@@ -312,7 +312,13 @@ formData.append("codAvailable", String(codAvailable));
 
     <div className="max-w-4xl mx-auto p-6 space-y-6">
 
-      <h1 className="text-3xl font-bold text-gray-800">
+      <h1 className="
+          text-3xl
+          md:text-4xl
+          font-extrabold
+          tracking-tight
+          text-slate-900
+          ">
         Add Product
       </h1>
 
@@ -535,16 +541,56 @@ onChange={(e)=>setName(e.target.value)}
   className="space-y-3 bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm"
 >
 
-      <Input
-      className={inputStyle}
-        placeholder="Section title (Features / Warranty / Ingredients)"
-        value={item.title}
-        onChange={(e) => {
-          const updated = [...productDetails];
-          updated[index].title = e.target.value;
-          setProductDetails(updated);
-        }}
-      />
+      <SelectField
+  value={item.title}
+  onChange={(e: any) => {
+    const updated = [...productDetails];
+    updated[index].title = e.target.value;
+    setProductDetails(updated);
+  }}
+>
+  <option value="">📂 Select Section</option>
+
+  <option value="✨ Features">
+    ✨ Features
+  </option>
+
+  <option value="🧪 Ingredients">
+    🧪 Ingredients
+  </option>
+
+  <option value="📦 Specifications">
+    📦 Specifications
+  </option>
+
+  <option value="🛡 Warranty">
+    🛡 Warranty
+  </option>
+
+  <option value="📖 Usage Instructions">
+    📖 Usage Instructions
+  </option>
+
+  <option value="🥗 Nutrition Facts">
+    🥗 Nutrition Facts
+  </option>
+
+  <option value="💊 Medical Information">
+    💊 Medical Information
+  </option>
+
+  <option value="👕 Fabric & Material">
+    👕 Fabric & Material
+  </option>
+
+  <option value="📚 Book Details">
+    📚 Book Details
+  </option>
+
+  <option value="⚡ Technical Details">
+    ⚡ Technical Details
+  </option>
+</SelectField>
 
       <Textarea
        className={textareaStyle}

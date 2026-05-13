@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
 import {
   BarChart,
   Bar,
@@ -13,238 +17,643 @@ import {
   CartesianGrid,
 } from "recharts";
 
-interface Order {
-  id: number;
-  orderId: string;
-  deliveryCharge: number;
-  date: string;
-  discount: number;
-  amount: number;
-  status: "Delivered";
-}
+import {
+  inputStyle,
+  primaryButton,
+  cardStyle,
+} from "@/styles/uiStyles";
 
-const deliveryTrend = [
-  { day: "Mon", deliveries: 5 },
-  { day: "Tue", deliveries: 8 },
-  { day: "Wed", deliveries: 6 },
-  { day: "Thu", deliveries: 10 },
-  { day: "Fri", deliveries: 7 },
-  { day: "Sat", deliveries: 12 },
-  { day: "Sun", deliveries: 9 },
-];
-
-const revenueTrend = [
-  { day: "Mon", revenue: 2500 },
-  { day: "Tue", revenue: 3200 },
-  { day: "Wed", revenue: 1800 },
-  { day: "Thu", revenue: 4000 },
-  { day: "Fri", revenue: 2900 },
-  { day: "Sat", revenue: 5000 },
-  { day: "Sun", revenue: 3700 },
-];
+import {
+  Search,
+  CheckCircle2,
+  IndianRupee,
+  Truck,
+} from "lucide-react";
 
 const DeliveredOrders = () => {
+
+  const token = localStorage.getItem("token");
+
   const [search, setSearch] = useState("");
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [orders] = useState<Order[]>([
-    {
-      id: 1,
-      orderId: "#6001",
-      deliveryCharge: 50,
-      date: "27 Mar 2025",
-      discount: 100,
-      amount: 1500,
-      status: "Delivered",
-    },
-    {
-      id: 2,
-      orderId: "#6002",
-      deliveryCharge: 30,
-      date: "26 Mar 2025",
-      discount: 0,
-      amount: 900,
-      status: "Delivered",
-    },
-    {
-      id: 3,
-      orderId: "#6003",
-      deliveryCharge: 70,
-      date: "25 Mar 2025",
-      discount: 50,
-      amount: 2200,
-      status: "Delivered",
-    },
-  ]);
+  /* FETCH DELIVERED ORDERS */
+  useEffect(() => {
 
-  const filteredOrders = orders.filter((order) =>
-    order.orderId.toLowerCase().includes(search.toLowerCase())
-  );
+    const fetchOrders = async () => {
 
+      try {
+
+        setLoading(true);
+
+        const res = await axios.get(
+          "http://localhost:8000/api/v1/orders",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const delivered =
+          res.data.data?.filter(
+            (o: any) => o.status === "Delivered"
+          ) || [];
+
+        setOrders(delivered);
+
+      } catch (err) {
+
+        console.log(err);
+
+      } finally {
+
+        setLoading(false);
+
+      }
+    };
+
+    fetchOrders();
+
+  }, []);
+
+  /* FILTER */
+  const filteredOrders = useMemo(() => {
+
+    return orders.filter((order) =>
+      order._id
+        ?.toLowerCase()
+        .includes(search.toLowerCase())
+    );
+
+  }, [orders, search]);
+
+  /* SUMMARY */
   const totalRevenue = orders.reduce(
-    (acc, o) => acc + o.amount,
+    (acc, o) => acc + (o.totalAmount || 0),
     0
   );
 
   const totalDeliveryCharges = orders.reduce(
-    (acc, o) => acc + o.deliveryCharge,
+    (acc, o) => acc + (o.deliveryCharge || 0),
     0
   );
 
-  return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+  /* DYNAMIC DELIVERY TREND */
+  const deliveryTrend = useMemo(() => {
 
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">
-          Delivered Orders
-        </h1>
-        <p className="text-gray-500">
-          Track completed deliveries & revenue
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const trend = days.map((day) => ({
+      day,
+      deliveries: 0,
+    }));
+
+    orders.forEach((order) => {
+
+      const date = new Date(order.createdAt);
+
+      const dayIndex = date.getDay();
+
+      trend[dayIndex].deliveries += 1;
+
+    });
+
+    return trend;
+
+  }, [orders]);
+
+  /* DYNAMIC REVENUE TREND */
+  const revenueTrend = useMemo(() => {
+
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const trend = days.map((day) => ({
+      day,
+      revenue: 0,
+    }));
+
+    orders.forEach((order) => {
+
+      const date = new Date(order.createdAt);
+
+      const dayIndex = date.getDay();
+
+      trend[dayIndex].revenue +=
+        Number(order.totalAmount || 0);
+
+    });
+
+    return trend;
+
+  }, [orders]);
+
+  /* LOADING */
+  if (loading) {
+    return (
+      <div className="
+      min-h-screen
+      flex items-center justify-center
+      bg-slate-50
+      ">
+        <p className="text-slate-500 text-lg">
+          Loading delivered orders...
         </p>
       </div>
+    );
+  }
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+  return (
 
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-gray-500">
-              Total Delivered
-            </p>
-            <h2 className="text-2xl font-bold">
-              {orders.length}
-            </h2>
+    <div className="
+    p-6
+    space-y-8
+    bg-slate-50
+    min-h-screen
+    ">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+
+        <div>
+
+          <h1 className="
+          text-3xl
+          md:text-4xl
+          font-extrabold
+          tracking-tight
+          text-slate-900
+          ">
+            Delivered Orders
+          </h1>
+
+          <p className="text-slate-500 mt-1 text-sm">
+            Track completed deliveries & revenue
+          </p>
+
+        </div>
+
+        <Button
+          className={`
+          ${primaryButton}
+          hover:scale-[1.02]
+          active:scale-[0.98]
+          transition-all
+          duration-200
+          `}
+        >
+          Export Report
+        </Button>
+
+      </div>
+
+      {/* SUMMARY CARDS */}
+      <div className="
+      grid
+      grid-cols-1
+      md:grid-cols-3
+      gap-5
+      ">
+
+        {/* TOTAL DELIVERED */}
+        <Card
+          className={`
+          ${cardStyle}
+          rounded-3xl
+          border border-slate-200
+          shadow-sm
+          hover:shadow-lg
+          transition-all
+          `}
+        >
+          <CardContent className="p-6">
+
+            <div className="flex items-center justify-between">
+
+              <div>
+
+                <p className="text-sm text-slate-500">
+                  Total Delivered
+                </p>
+
+                <h2 className="
+                text-3xl
+                font-bold
+                text-slate-900
+                mt-2
+                ">
+                  {orders.length}
+                </h2>
+
+              </div>
+
+              <div className="
+              w-14 h-14
+              rounded-2xl
+              bg-green-100
+              flex items-center justify-center
+              ">
+                <CheckCircle2
+                  className="text-green-600"
+                  size={28}
+                />
+              </div>
+
+            </div>
+
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-gray-500">
-              Total Revenue
-            </p>
-            <h2 className="text-2xl font-bold text-green-600">
-              ₹{totalRevenue}
-            </h2>
+        {/* REVENUE */}
+        <Card
+          className={`
+          ${cardStyle}
+          rounded-3xl
+          border border-slate-200
+          shadow-sm
+          hover:shadow-lg
+          transition-all
+          `}
+        >
+          <CardContent className="p-6">
+
+            <div className="flex items-center justify-between">
+
+              <div>
+
+                <p className="text-sm text-slate-500">
+                  Total Revenue
+                </p>
+
+                <h2 className="
+                text-3xl
+                font-bold
+                text-emerald-600
+                mt-2
+                ">
+                  ₹{totalRevenue}
+                </h2>
+
+              </div>
+
+              <div className="
+              w-14 h-14
+              rounded-2xl
+              bg-emerald-100
+              flex items-center justify-center
+              ">
+                <IndianRupee
+                  className="text-emerald-600"
+                  size={28}
+                />
+              </div>
+
+            </div>
+
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-gray-500">
-              Delivery Charges Collected
-            </p>
-            <h2 className="text-2xl font-bold text-blue-600">
-              ₹{totalDeliveryCharges}
-            </h2>
+        {/* DELIVERY CHARGE */}
+        <Card
+          className={`
+          ${cardStyle}
+          rounded-3xl
+          border border-slate-200
+          shadow-sm
+          hover:shadow-lg
+          transition-all
+          `}
+        >
+          <CardContent className="p-6">
+
+            <div className="flex items-center justify-between">
+
+              <div>
+
+                <p className="text-sm text-slate-500">
+                  Delivery Charges
+                </p>
+
+                <h2 className="
+                text-3xl
+                font-bold
+                text-blue-600
+                mt-2
+                ">
+                  ₹{totalDeliveryCharges}
+                </h2>
+
+              </div>
+
+              <div className="
+              w-14 h-14
+              rounded-2xl
+              bg-blue-100
+              flex items-center justify-center
+              ">
+                <Truck
+                  className="text-blue-600"
+                  size={28}
+                />
+              </div>
+
+            </div>
+
           </CardContent>
         </Card>
 
       </div>
 
-      {/* Graph Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* CHARTS */}
+      <div className="
+      grid
+      grid-cols-1
+      xl:grid-cols-2
+      gap-6
+      ">
 
-        {/* Delivery Trend */}
-        <Card>
+        {/* DELIVERY TREND */}
+        <Card
+          className={`
+          ${cardStyle}
+          rounded-3xl
+          border border-slate-200
+          `}
+        >
           <CardContent className="p-6">
-            <h2 className="font-semibold mb-4">
-              Weekly Delivery Trend
-            </h2>
-            <ResponsiveContainer width="100%" height={250}>
+
+            <div className="mb-5">
+
+              <h2 className="
+              text-xl
+              font-bold
+              text-slate-800
+              ">
+                Weekly Delivery Trend
+              </h2>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Dynamic delivered orders analytics
+              </p>
+
+            </div>
+
+            <ResponsiveContainer width="100%" height={260}>
+
               <BarChart data={deliveryTrend}>
+
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
+
                 <Bar
                   dataKey="deliveries"
                   fill="#3b82f6"
-                  radius={[6, 6, 0, 0]}
+                  radius={[10, 10, 0, 0]}
                 />
+
               </BarChart>
+
             </ResponsiveContainer>
+
           </CardContent>
         </Card>
 
-        {/* Revenue Trend */}
-        <Card>
+        {/* REVENUE TREND */}
+        <Card
+          className={`
+          ${cardStyle}
+          rounded-3xl
+          border border-slate-200
+          `}
+        >
           <CardContent className="p-6">
-            <h2 className="font-semibold mb-4">
-              Revenue Trend
-            </h2>
-            <ResponsiveContainer width="100%" height={250}>
+
+            <div className="mb-5">
+
+              <h2 className="
+              text-xl
+              font-bold
+              text-slate-800
+              ">
+                Revenue Trend
+              </h2>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Dynamic weekly revenue analytics
+              </p>
+
+            </div>
+
+            <ResponsiveContainer width="100%" height={260}>
+
               <LineChart data={revenueTrend}>
+
                 <CartesianGrid strokeDasharray="3 3" />
+
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
+
                 <Line
                   type="monotone"
                   dataKey="revenue"
                   stroke="#10b981"
-                  strokeWidth={3}
+                  strokeWidth={4}
                 />
+
               </LineChart>
+
             </ResponsiveContainer>
+
           </CardContent>
         </Card>
 
       </div>
 
-      {/* Search */}
-      <div>
+      {/* SEARCH */}
+      <div className="relative w-full sm:w-[320px]">
+
+        <Search
+          size={18}
+          className="
+          absolute
+          left-4
+          top-1/2
+          -translate-y-1/2
+          text-slate-400
+          "
+        />
+
         <Input
           placeholder="Search by Order ID..."
           value={search}
           onChange={(e) =>
             setSearch(e.target.value)
           }
-          className="max-w-xs"
+          className={`
+          ${inputStyle}
+          pl-11
+          `}
         />
+
       </div>
 
-      {/* Orders Table */}
-      <Card>
-        <CardContent className="p-6 overflow-x-auto">
+      {/* TABLE */}
+      <Card
+        className={`
+        ${cardStyle}
+        rounded-3xl
+        border border-slate-200
+        overflow-hidden
+        `}
+      >
+
+        <CardContent className="p-0 overflow-x-auto">
+
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left">
-                <th className="py-3">Order ID</th>
-                <th>Delivery Charge</th>
-                <th>Date</th>
-                <th>Discount</th>
-                <th>Amount</th>
-                <th>Status</th>
+
+            <thead className="bg-slate-100">
+
+              <tr className="text-left">
+
+                <th className="px-6 py-4 font-semibold text-slate-700">
+                  Order ID
+                </th>
+
+                <th className="px-6 py-4 font-semibold text-slate-700">
+                  Delivery Charge
+                </th>
+
+                <th className="px-6 py-4 font-semibold text-slate-700">
+                  Date
+                </th>
+
+                <th className="px-6 py-4 font-semibold text-slate-700">
+                  Discount
+                </th>
+
+                <th className="px-6 py-4 font-semibold text-slate-700">
+                  Amount
+                </th>
+
+                <th className="px-6 py-4 font-semibold text-slate-700">
+                  Status
+                </th>
+
               </tr>
+
             </thead>
 
             <tbody>
+
               {filteredOrders.map((order) => (
+
                 <tr
-                  key={order.id}
-                  className="border-b hover:bg-gray-50"
+                  key={order._id}
+                  className="
+                  border-t
+                  hover:bg-slate-50
+                  transition
+                  "
                 >
-                  <td className="py-3 font-medium">
-                    {order.orderId}
+
+                  <td className="
+                  px-6 py-4
+                  font-semibold
+                  text-slate-800
+                  ">
+                    #{order._id?.slice(-6)}
                   </td>
-                  <td className="text-blue-600 font-semibold">
-                    ₹{order.deliveryCharge}
+
+                  <td className="
+                  px-6 py-4
+                  font-semibold
+                  text-blue-600
+                  ">
+                    ₹{order.deliveryCharge || 0}
                   </td>
-                  <td>{order.date}</td>
-                  <td>₹{order.discount}</td>
-                  <td className="font-semibold">
-                    ₹{order.amount}
+
+                  <td className="px-6 py-4 text-slate-600">
+                    {new Date(
+                      order.createdAt
+                    ).toLocaleDateString()}
                   </td>
-                  <td>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+
+                  <td className="px-6 py-4 text-slate-600">
+                    ₹{order.discount || 0}
+                  </td>
+
+                  <td className="
+                  px-6 py-4
+                  font-bold
+                  text-slate-900
+                  ">
+                    ₹{order.totalAmount || 0}
+                  </td>
+
+                  <td className="px-6 py-4">
+
+                    <span className="
+                    px-3 py-1
+                    rounded-full
+                    text-xs
+                    font-semibold
+                    bg-green-100
+                    text-green-700
+                    ">
                       Delivered
                     </span>
+
                   </td>
+
                 </tr>
+
               ))}
+
             </tbody>
 
           </table>
+
+          {/* EMPTY */}
+          {filteredOrders.length === 0 && (
+
+            <div className="
+            py-20
+            text-center
+            ">
+
+              <div className="
+              w-20 h-20
+              mx-auto
+              rounded-full
+              bg-slate-100
+              flex items-center justify-center
+              text-4xl
+              mb-5
+              ">
+                📦
+              </div>
+
+              <h2 className="
+              text-xl
+              font-semibold
+              text-slate-800
+              ">
+                No Delivered Orders
+              </h2>
+
+              <p className="text-slate-500 mt-2">
+                Orders will appear here once delivered
+              </p>
+
+            </div>
+
+          )}
+
         </CardContent>
+
       </Card>
 
     </div>

@@ -76,7 +76,13 @@ const DeliveryBoys = () => {
     <>
       <div className="max-w-7xl mx-auto space-y-8">
 
-        <h1 className="text-3xl font-bold">Delivery Boys</h1>
+        <h1 className="
+          text-3xl
+          md:text-4xl
+          font-extrabold
+          tracking-tight
+          text-slate-900
+          ">Delivery Boys</h1>
 
         {/* ADD */}
         <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 space-y-5">

@@ -198,7 +198,13 @@ const Payments = () => {
 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
   <div>
-    <h1 className="text-3xl font-bold">
+    <h1 className="
+          text-3xl
+          md:text-4xl
+          font-extrabold
+          tracking-tight
+          text-slate-900
+          ">
       Payments
     </h1>
 
