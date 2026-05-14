@@ -1,26 +1,53 @@
-import * as React from "react"
+import * as React from "react";
+
+import axios from "axios";
+
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
-import Autoplay from "embla-carousel-autoplay"
+} from "@/components/ui/carousel";
 
-import { banners } from "@/data/banners";
-
-
+import Autoplay from "embla-carousel-autoplay";
 
 const HeroCarousel = () => {
+
+  const [banners, setBanners] = React.useState<any[]>([]);
+
   const autoplay = React.useRef(
     Autoplay({
       delay: 4000,
       stopOnInteraction: false,
     })
-  )
+  );
+
+  React.useEffect(() => {
+
+    fetchBanners();
+
+  }, []);
+
+  const fetchBanners = async () => {
+
+    try {
+
+      const res = await axios.get(
+        "http://localhost:8000/api/v1/banners"
+      );
+
+      setBanners(res.data.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
 
   return (
     <section className="max-w-7xl mx-auto mt-6 mb-2">
-      
+
       <div className="rounded-2xl overflow-hidden shadow-lg">
 
         <Carousel
@@ -30,9 +57,12 @@ const HeroCarousel = () => {
           onMouseLeave={() => autoplay.current.reset()}
           className="w-full"
         >
+
           <CarouselContent>
+
             {banners.map((banner) => (
-              <CarouselItem key={banner.id}>
+
+              <CarouselItem key={banner._id}>
 
                 <div className="w-full h-[340px] md:h-[380px]">
 
@@ -46,9 +76,11 @@ const HeroCarousel = () => {
                 </div>
 
               </CarouselItem>
+
             ))}
 
           </CarouselContent>
+
         </Carousel>
 
       </div>

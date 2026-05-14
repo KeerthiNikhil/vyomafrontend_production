@@ -60,11 +60,13 @@ const ShopProducts = () => {
   }, [id]);
 
   // ================= SHOP IMAGES =================
-  const images =
-    shop?.shopImages?.length > 0
-      ? shop.shopImages.map(
-          (img: string) => `http://localhost:8000${img}`
-        )
+ const images =
+  shop?.shopImages?.length > 0
+    ? shop.shopImages.map((img: string) =>
+        img.startsWith("http")
+          ? img
+          : `http://localhost:8000${img}`
+      )
       : shop?.shopImage
       ? [`http://localhost:8000${shop.shopImage}`]
       : ["/placeholder.png"];
@@ -137,8 +139,15 @@ const ShopProducts = () => {
   className="min-w-[220px] bg-white border border-slate-200 rounded-3xl p-4 shadow-sm hover:shadow-md transition"
 >
   <img
-    onClick={() => navigate(`/product/${product._id}`)}
-    src={`http://localhost:8000${product.images?.[0]}`}
+    onClick={() => {
+  window.scrollTo(0, 0);
+  navigate(`/product/${product._id}`);
+}}
+    src={
+  product.images?.[0]?.startsWith("http")
+    ? product.images[0]
+    : `http://localhost:8000${product.images?.[0]}`
+}
     className="h-40 w-full object-cover rounded-2xl cursor-pointer border border-slate-100"
   />
 

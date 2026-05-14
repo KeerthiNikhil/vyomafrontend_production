@@ -414,18 +414,78 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
       </div>
 
       {/* STICKY BAR */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white/95 backdrop-blur-md px-6 py-4 flex justify-between items-center z-50">
-        <div>
-          <p className="text-sm">{product.name}</p>
-          <p className="font-bold">₹{selectedUnit?.price || product.finalPrice}</p>
-        </div>
-        <button
-          onClick={handleAddToCart}
-          className="bg-blue-600 text-white px-10 py-3 rounded-2xl font-semibold shadow-sm"
-        >
-          ADD
-        </button>
-      </div>
+      {/* STICKY BAR */}
+{product && !loading && (
+
+  <div
+    className="
+    fixed
+    bottom-0
+    left-0
+    right-0
+    border-t
+    border-slate-200
+    bg-white/95
+    backdrop-blur-md
+    px-4
+    md:px-6
+    py-3
+    flex
+    items-center
+    justify-between
+    z-50
+    shadow-[0_-4px_20px_rgba(0,0,0,0.06)]
+    animate-in
+    slide-in-from-bottom
+    duration-300
+    "
+  >
+
+    {/* PRODUCT INFO */}
+    <div className="min-w-0">
+
+      <p className="
+      text-xs
+      text-slate-500
+      line-clamp-1
+      ">
+        {product.name}
+      </p>
+
+      <p className="
+      text-lg
+      font-bold
+      text-slate-900
+      ">
+        ₹
+        {selectedUnit?.price ||
+          product.finalPrice}
+      </p>
+
+    </div>
+
+    {/* BUTTON */}
+    <button
+      onClick={handleAddToCart}
+      className="
+      h-12
+      px-8
+      rounded-2xl
+      bg-blue-600
+      hover:bg-blue-700
+      active:scale-95
+      transition-all
+      text-white
+      font-semibold
+      shadow-md
+      "
+    >
+      Add to Cart
+    </button>
+
+  </div>
+
+)}
 
     </section>
   );

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { banners as initialBanners } from "@/data/banners";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { useEffect } from "react";
+import axios from "axios";
 
 interface BannerType {
-  id: number;
+  _id: string;
   title: string;
   image: string;
   priority: number;
@@ -11,20 +12,19 @@ interface BannerType {
 }
 
 const Banners = () => {
-  const [banners, setBanners] =
-    useState<BannerType[]>(initialBanners);
+  const [banners, setBanners] = useState<any[]>([]);
 
   const [showModal, setShowModal] = useState(false);
 
   const [editingBanner, setEditingBanner] =
     useState<BannerType | null>(null);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    image: "",
-    priority: "",
-    status: "Active",
-  });
+  const [formData, setFormData] = useState<any>({
+  title: "",
+  image: null,
+  priority: "",
+  status: "Active",
+});
 
   // ✅ OPEN ADD
   const handleAddOpen = () => {
@@ -32,7 +32,7 @@ const Banners = () => {
 
     setFormData({
       title: "",
-      image: "",
+      image: null,
       priority: "",
       status: "Active",
     });
@@ -42,74 +42,135 @@ const Banners = () => {
 
   // ✅ OPEN EDIT
   const handleEdit = (banner: BannerType) => {
-    setEditingBanner(banner);
 
-    setFormData({
-      title: banner.title,
-      image: banner.image,
-      priority: banner.priority.toString(),
-      status: banner.status,
-    });
+  setEditingBanner(banner);
 
-    setShowModal(true);
-  };
+  setFormData({
+    title: banner.title || "",
+    image: banner.image || null,
+    priority: banner.priority || "",
+    status: banner.status || "Active",
+  });
+
+  setShowModal(true);
+
+};
 
   // ✅ SAVE
-  const handleSave = () => {
-    if (
-      !formData.title ||
-      !formData.image ||
-      !formData.priority
-    ) {
-      alert("Fill all fields");
-      return;
+  const handleSave = async () => {
+
+  try {
+
+    const data = new FormData();
+
+    data.append("title", formData.title);
+
+    data.append(
+      "priority",
+      formData.priority
+    );
+
+    data.append(
+      "status",
+      formData.status
+    );
+
+    if (formData.image instanceof File) {
+      data.append("image", formData.image);
     }
 
-    // EDIT
-    if (editingBanner) {
-      setBanners((prev) =>
-        prev.map((banner) =>
-          banner.id === editingBanner.id
-            ? {
-                ...banner,
-                title: formData.title,
-                image: formData.image,
-                priority: Number(formData.priority),
-                status: formData.status,
-              }
-            : banner
-        )
+    // ✅ ADD
+    if (!editingBanner) {
+
+      await axios.post(
+        "http://localhost:8000/api/v1/banners",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
       );
+
     }
 
-    // ADD
+    // ✅ EDIT
     else {
-      const newBanner: BannerType = {
-        id: Date.now(),
-        title: formData.title,
-        image: formData.image,
-        priority: Number(formData.priority),
-        status: formData.status,
-      };
 
-      setBanners([...banners, newBanner]);
+      await axios.put(
+        `http://localhost:8000/api/v1/banners/${editingBanner._id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
+
     }
+
+    fetchBanners();
 
     setShowModal(false);
-  };
 
-  // ✅ DELETE
-  const handleDelete = (id: number) => {
-    const confirmDelete = window.confirm(
-      "Delete this banner?"
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+const handleDelete = async (_id: string) => {
+
+  const confirmDelete = window.confirm(
+    "Delete this banner?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+
+    await axios.delete(
+      `http://localhost:8000/api/v1/banners/${_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
 
-    if (!confirmDelete) return;
+    fetchBanners();
 
-    setBanners((prev) =>
-      prev.filter((banner) => banner.id !== id)
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+useEffect(() => {
+  fetchBanners();
+}, []);
+
+const fetchBanners = async () => {
+  try {
+
+    const res = await axios.get(
+      "http://localhost:8000/api/v1/banners"
     );
-  };
+
+    setBanners(res.data.data);
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
 
   return (
     <div className="space-y-8">
@@ -188,7 +249,7 @@ const Banners = () => {
 
           {banners.map((banner) => (
             <div
-              key={banner.id}
+              key={banner._id}
               className="
                 bg-white
                 rounded-3xl
@@ -225,6 +286,21 @@ const Banners = () => {
                 </span>
 
               </div>
+              {/* IMAGE PREVIEW */}
+{typeof formData.image === "string" && (
+  <img
+    src={formData.image}
+    alt="banner"
+    className="
+      w-full
+      h-40
+      object-cover
+      rounded-2xl
+      border border-slate-200
+    "
+  />
+)}
+             
 
               {/* CONTENT */}
               <div className="p-5 space-y-4">
@@ -261,7 +337,7 @@ const Banners = () => {
 
                   <button
                     onClick={() =>
-                      handleDelete(banner.id)
+                      handleDelete(banner._id)
                     }
                     className="
                       flex-1
@@ -330,56 +406,45 @@ const Banners = () => {
             </div>
 
             {/* TITLE */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Banner Title
-              </label>
-
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    title: e.target.value,
-                  })
-                }
-                className="
-                  w-full
-                  h-12
-                  border border-slate-200
-                  rounded-2xl
-                  px-4
-                  outline-none
-                "
-              />
-            </div>
+           <input
+  type="text"
+  value={formData.title}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      title: e.target.value,
+    })
+  }
+  className="
+    w-full
+    h-12
+    border border-slate-200
+    rounded-2xl
+    px-4
+    outline-none
+  "
+/>
 
             {/* IMAGE */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Banner Image URL
-              </label>
-
-              <input
-                type="text"
-                value={formData.image}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    image: e.target.value,
-                  })
-                }
-                className="
-                  w-full
-                  h-12
-                  border border-slate-200
-                  rounded-2xl
-                  px-4
-                  outline-none
-                "
-              />
-            </div>
+            <input
+  type="file"
+  accept="image/*"
+  onChange={(e:any) =>
+    setFormData({
+      ...formData,
+      image: e.target.files[0],
+    })
+  }
+  className="
+    w-full
+    h-12
+    border border-slate-200
+    rounded-2xl
+    px-4
+    outline-none
+    pt-3
+  "
+/>
 
             {/* PRIORITY */}
             <div className="space-y-2">
