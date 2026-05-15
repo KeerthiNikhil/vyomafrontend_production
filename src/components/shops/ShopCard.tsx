@@ -33,10 +33,12 @@ const ShopCard = ({ shop, isLive = false }: ShopCardProps) => {
       <div className="relative h-44 w-full overflow-hidden">
         <img
           src={
-            shop.shopImages?.[0]
-              ? `http://localhost:8000${shop.shopImages[0]}`
-              : "/placeholder.png"
-          }
+  shop.shopImages?.[0]
+    ? shop.shopImages[0].startsWith("http")
+      ? shop.shopImages[0]
+      : `http://localhost:8000${shop.shopImages[0]}`
+    : "/placeholder.png"
+}
           alt={shop.shopName}
           onError={(e) => {
             e.currentTarget.src = "/placeholder.png";

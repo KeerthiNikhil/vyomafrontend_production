@@ -56,11 +56,18 @@ const inWishlist = isInWishlist(id);
     />
   </button>
 
-  <img
-    src={image}
-    alt={name}
-    className="w-full h-full object-cover"
-  />
+ <img
+  src={
+    image?.startsWith("http")
+      ? image
+      : `http://localhost:8000${image}`
+  }
+  alt={name}
+  onError={(e) => {
+    e.currentTarget.src = "/placeholder.png";
+  }}
+  className="w-full h-full object-cover"
+/>
 </div>
 
       {/* Product Name */}

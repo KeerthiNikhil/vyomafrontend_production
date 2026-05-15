@@ -81,35 +81,7 @@ const ShopCreate = () => {
     }
   }, [businessType]);
 
-  const addMoreImages = async () => {
-  if (!shopImages.length) {
-    toast.error("Select images first");
-    return;
-  }
-
-  try {
-    const formData = new FormData();
-
-    shopImages.forEach((img) => {
-      formData.append("shopImages", img);
-    });
-
-    await axios.post(
-      `/shops/69a911b0fe07f41eac77ab02/add-images`, // ✅ your shop id
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    toast.success("Images added successfully 🎉");
-  } catch (err) {
-    toast.error("Upload failed ❌");
-  }
-};
+ 
   const handleFetchLocation = () => {
   if (!navigator.geolocation) {
     toast.error("Geolocation not supported");
@@ -420,22 +392,6 @@ const ShopCreate = () => {
 
   </div>
 
-  <button
-    type="button"
-    onClick={addMoreImages}
-    className="
-      w-full h-12
-      rounded-2xl
-      bg-blue-600
-      hover:bg-blue-700
-      text-white
-      font-medium
-      shadow-md
-      transition
-    "
-  >
-    Upload Images
-  </button>
 
   <p className="text-xs text-slate-500">
     Upload up to 3 images for shop banner carousel

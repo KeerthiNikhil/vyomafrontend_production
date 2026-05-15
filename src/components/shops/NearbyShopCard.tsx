@@ -25,10 +25,12 @@ const NearbyShopCard = ({
       <div className="h-24 sm:h-36 w-full overflow-hidden">
        <img
   src={
-    image
-      ? `http://localhost:8000${image}`
-      : "/placeholder.png"
-  }
+  image
+    ? image.startsWith("http")
+      ? image
+      : `http://localhost:8000${image}`
+    : "/placeholder.png"
+}
   alt={name}
   onError={(e) => {
     e.currentTarget.src = "/placeholder.png";

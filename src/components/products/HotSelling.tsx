@@ -52,10 +52,12 @@ const HotSelling = ({ products = [] }: any) => {
                     name={product.name}
                     price={Math.max(product.finalPrice || 0, 0)}
                     image={
-                      product.images?.[0]
-                        ? `${API}${product.images[0]}`
-                        : "/placeholder.png"
-                    }
+  product.images?.[0]
+    ? product.images[0].startsWith("http")
+      ? product.images[0]
+      : `${API}${product.images[0]}`
+    : "/placeholder.png"
+}
                     weight={product.unit || "200 g"}
                   />
                 </CarouselItem>
