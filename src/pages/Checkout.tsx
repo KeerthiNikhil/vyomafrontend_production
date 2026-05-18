@@ -64,9 +64,21 @@ useEffect(() => {
 
       if (paymentMethod === "COD") {
         const res = await axios.post("/orders", {
-          paymentMethod,
-          totalAmount: total,
-        });
+  paymentMethod,
+  totalAmount: total,
+  deliveryCharge: deliveryFee,
+
+  shippingAddress: address,
+
+  items: cart.map((item) => ({
+    product: item.productId || item._id,
+    name: item.name,
+    image: item.image,
+    quantity: item.quantity,
+    price: item.price,
+    shop: item.shop?._id,
+  })),
+});
 
         if (res.data.success) {
           toast.success("Order placed 🎉");
@@ -92,9 +104,23 @@ useEffect(() => {
 
         handler: async (response: any) => {
           const verify = await axios.post("/orders/verify-payment", {
-            ...response,
-            totalAmount: total,
-          });
+  ...response,
+
+  totalAmount: total,
+
+  deliveryCharge: deliveryFee,
+
+  shippingAddress: address,
+
+  items: cart.map((item) => ({
+    product: item.productId || item._id,
+    name: item.name,
+    image: item.image,
+    quantity: item.quantity,
+    price: item.price,
+    shop: item.shop?._id,
+  })),
+});
 
           if (verify.data.success) {
             toast.success("Payment successful 🎉");
