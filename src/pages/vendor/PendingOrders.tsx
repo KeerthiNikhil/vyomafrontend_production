@@ -85,9 +85,10 @@ const PendingOrders = () => {
   /* FILTER PENDING */
   const pendingOrders = useMemo(() => {
 
-    return orders.filter(
-      (o) => o.status === "Pending"
-    );
+   return orders.filter(
+  (o) =>
+    o.status?.toLowerCase() === "pending"
+);
 
   }, [orders]);
 

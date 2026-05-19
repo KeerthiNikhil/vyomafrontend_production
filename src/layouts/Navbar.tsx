@@ -150,10 +150,15 @@ shadow-none
 
 <div className="flex items-center gap-3 sm:gap-5">
 
+<span className="hidden sm:block text-sm font-medium">
+Hi, {user.name}
+
+</span>
 
 {/* Wishlist */}
 
 <Link to="/wishlist">
+
 
 <Button
 variant="ghost"
@@ -186,6 +191,7 @@ flex items-center justify-center
 </Button>
 
 </Link>
+
 
 {/* Vyoma Wallet */}
 
@@ -253,9 +259,13 @@ font-semibold
 
 </div>
 
-<span className="hidden sm:block text-sm font-medium">
-Hi, {user.name}
-</span>
+
+<Link
+  to="/orders"
+  className="text-sm font-medium hover:text-blue-600"
+>
+  My Orders
+</Link>
 
 <Button
 onClick={handleLogout}

@@ -4,13 +4,240 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import {
+  ChevronDown,
+  Search,
+  Check,
+} from "lucide-react";
 
 const inputStyle =
   "h-12 rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
 const textareaStyle =
   "min-h-[120px] rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100 focus-visible:border-blue-500";
 
-  const SelectField = ({
+  const SearchableSelect = ({
+  value,
+  onChange,
+  options,
+  placeholder = "Select",
+  disabled = false,
+}: any) => {
+
+  const [open, setOpen] = useState(false);
+
+  const [search, setSearch] = useState("");
+
+  const filteredOptions = options.filter(
+    (item: any) =>
+      item.label
+        .toLowerCase()
+        .includes(search.toLowerCase())
+  );
+
+  return (
+
+    <div className="relative">
+
+      {/* SELECT BUTTON */}
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen(!open)}
+        className="
+        w-full
+        h-14
+        px-5
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        shadow-sm
+        flex
+        items-center
+        justify-between
+        hover:border-blue-400
+        transition
+        "
+      >
+
+        <span className="
+        text-slate-800
+        font-medium
+        truncate
+        ">
+
+          {value || placeholder}
+
+        </span>
+
+        <ChevronDown
+          size={18}
+          className={`
+          text-slate-500
+          transition-transform
+          ${open ? "rotate-180" : ""}
+          `}
+        />
+
+      </button>
+
+      {/* DROPDOWN */}
+      {open && (
+
+        <div className="
+        absolute
+        z-50
+        mt-2
+        w-full
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        shadow-xl
+        overflow-hidden
+        ">
+
+          {/* SEARCH */}
+          <div className="
+          flex
+          items-center
+          gap-2
+          px-4
+          py-3
+          border-b
+          border-slate-100
+          ">
+
+            <Search
+              size={16}
+              className="text-slate-400"
+            />
+
+            <input
+              autoFocus
+              type="text"
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              placeholder="Search section..."
+              className="
+              w-full
+              outline-none
+              text-sm
+              "
+            />
+
+          </div>
+
+          {/* OPTIONS */}
+          <div className="
+          max-h-72
+          overflow-y-auto
+          ">
+
+            {filteredOptions.length > 0 ? (
+
+              filteredOptions.map(
+                (item: any, index: number) => {
+
+                  const selected =
+                    value === item.label;
+
+                  return (
+
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+
+                        onChange(item.label);
+
+                        setOpen(false);
+
+                        setSearch("");
+
+                      }}
+                      className={`
+                      w-full
+                      px-4
+                      py-3
+                      flex
+                      items-center
+                      justify-between
+                      text-left
+                      hover:bg-blue-50
+                      transition
+
+                      ${
+                        selected
+                          ? "bg-blue-50"
+                          : ""
+                      }
+                      `}
+                    >
+
+                      <span className="
+                      flex
+                      items-center
+                      gap-3
+                      ">
+
+                        <span className="text-lg">
+                          {item.icon}
+                        </span>
+
+                        <span className="
+                        font-medium
+                        text-slate-700
+                        ">
+                          {item.label}
+                        </span>
+
+                      </span>
+
+                      {selected && (
+                        <Check
+                          size={16}
+                          className="
+                          text-blue-600
+                          "
+                        />
+                      )}
+
+                    </button>
+
+                  );
+                }
+              )
+
+            ) : (
+
+              <div className="
+              p-4
+              text-sm
+              text-slate-400
+              text-center
+              ">
+
+                No sections found
+
+              </div>
+
+            )}
+
+          </div>
+
+        </div>
+
+      )}
+
+    </div>
+
+  );
+};
+
+const SelectField = ({
   value,
   onChange,
   children,
@@ -18,40 +245,50 @@ const textareaStyle =
 }: any) => {
   return (
     <div className="relative">
+
       <select
         value={value}
         onChange={onChange}
         disabled={disabled}
         className="
-  w-full h-12 px-5 pr-14
-  rounded-2xl
-  border border-slate-200
-  bg-gradient-to-b from-white to-slate-50
-  shadow-sm
-  appearance-none
-  outline-none
-  cursor-pointer
-  text-slate-800
-  font-medium
-  transition-all duration-200
-  hover:border-blue-300
-  hover:shadow-md
-  focus:border-blue-500
-  focus:ring-4 focus:ring-blue-100
-  disabled:bg-slate-100
-  disabled:text-slate-400
-  disabled:cursor-not-allowed
-"
+        w-full
+        h-12
+        px-5
+        pr-12
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        shadow-sm
+        outline-none
+        appearance-none
+        transition
+        hover:border-blue-400
+        focus:border-blue-500
+        focus:ring-4
+        focus:ring-blue-100
+        disabled:bg-slate-100
+        "
       >
         {children}
       </select>
 
-      <span className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs transition-all">
-  ▼
-</span>
+      <ChevronDown
+        size={16}
+        className="
+        absolute
+        right-4
+        top-1/2
+        -translate-y-1/2
+        text-slate-400
+        pointer-events-none
+        "
+      />
+
     </div>
   );
 };
+
 
 const AddProduct = () => {
 
@@ -307,6 +544,48 @@ formData.append("codAvailable", String(codAvailable));
 
   };
 
+  const sectionOptions = [
+  {
+    label: "✨ Features",
+    icon: "✨",
+  },
+  {
+    label: "🧪 Ingredients",
+    icon: "🧪",
+  },
+  {
+    label: "📦 Specifications",
+    icon: "📦",
+  },
+  {
+    label: "🛡 Warranty",
+    icon: "🛡",
+  },
+  {
+    label: "📖 Usage Instructions",
+    icon: "📖",
+  },
+  {
+    label: "🥗 Nutrition Facts",
+    icon: "🥗",
+  },
+  {
+    label: "💊 Medical Information",
+    icon: "💊",
+  },
+  {
+    label: "👕 Fabric & Material",
+    icon: "👕",
+  },
+  {
+    label: "📚 Book Details",
+    icon: "📚",
+  },
+  {
+    label: "⚡ Technical Details",
+    icon: "⚡",
+  },
+];
 
   return(
 
@@ -365,23 +644,6 @@ className={`${uploadType==="bulk"
 Upload Excel File
 
 </h2>
-
-
-<SelectField
-  value={shopId}
-  onChange={(e:any)=>setShopId(e.target.value)}
->
-  
-
-<option value="">Select Shop</option>
-
-{shops.map((shop)=>(
-<option key={shop._id} value={shop._id}>
-{shop.shopName}
-</option>
-))}
-
-</SelectField>
 
 
 <input
@@ -541,56 +803,21 @@ onChange={(e)=>setName(e.target.value)}
   className="space-y-3 bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm"
 >
 
-      <SelectField
+      <SearchableSelect
   value={item.title}
-  onChange={(e: any) => {
+  placeholder="📂 Select Section"
+  options={sectionOptions}
+  onChange={(selected: string) => {
+
     const updated = [...productDetails];
-    updated[index].title = e.target.value;
+
+    updated[index].title = selected;
+
     setProductDetails(updated);
+
   }}
->
-  <option value="">📂 Select Section</option>
+/>
 
-  <option value="✨ Features">
-    ✨ Features
-  </option>
-
-  <option value="🧪 Ingredients">
-    🧪 Ingredients
-  </option>
-
-  <option value="📦 Specifications">
-    📦 Specifications
-  </option>
-
-  <option value="🛡 Warranty">
-    🛡 Warranty
-  </option>
-
-  <option value="📖 Usage Instructions">
-    📖 Usage Instructions
-  </option>
-
-  <option value="🥗 Nutrition Facts">
-    🥗 Nutrition Facts
-  </option>
-
-  <option value="💊 Medical Information">
-    💊 Medical Information
-  </option>
-
-  <option value="👕 Fabric & Material">
-    👕 Fabric & Material
-  </option>
-
-  <option value="📚 Book Details">
-    📚 Book Details
-  </option>
-
-  <option value="⚡ Technical Details">
-    ⚡ Technical Details
-  </option>
-</SelectField>
 
       <Textarea
        className={textareaStyle}
@@ -687,24 +914,46 @@ onChange={(e)=>setName(e.target.value)}
   </Button>
 </div>
 
-<div className="grid md:grid-cols-2 gap-4">
+<div className="space-y-2">
 
-<SelectField
-  value={discountType}
-  onChange={(e:any)=>setDiscountType(e.target.value)}
->
-  <option value="">Discount Type</option>
-  <option value="percentage">Percentage</option>
-  <option value="flat">Flat</option>
-</SelectField>
+  <div className="grid md:grid-cols-2 gap-4">
 
-<Input
-className={inputStyle}
-type="number"
-placeholder="Discount Value"
-value={discountValue}
-onChange={(e)=>setDiscountValue(e.target.value)}
-/>
+    <SelectField
+      value={discountType}
+      onChange={(e:any)=>setDiscountType(e.target.value)}
+    >
+      <option value="">Discount Type</option>
+      <option value="percentage">
+        Percentage
+      </option>
+
+      <option value="flat">
+        Flat
+      </option>
+    </SelectField>
+
+    <Input
+      className={inputStyle}
+      type="number"
+      placeholder="Discount Value"
+      value={discountValue}
+      onChange={(e)=>setDiscountValue(e.target.value)}
+    />
+
+  </div>
+
+  {/* NOTE */}
+  <p className="
+  text-sm
+  text-slate-500
+  px-1
+  ">
+
+    ℹ️ If there is no discount,
+    select <span className="font-medium">0</span>
+    or leave discount type empty.
+
+  </p>
 
 </div>
 

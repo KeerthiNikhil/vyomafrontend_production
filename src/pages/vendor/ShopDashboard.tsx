@@ -95,12 +95,12 @@ const ShopDashboard = () => {
 
   const confirmedOrders =
     orders.filter(
-      (o) => o.status === "Delivered"
+      (o) => o.status?.toLowerCase() === "delivered"
     ).length;
 
   const pendingOrders =
     orders.filter(
-      (o) => o.status === "Pending"
+      (o) => o.status?.toLowerCase() === "pending"
     ).length;
 
   const confirmedPayments =

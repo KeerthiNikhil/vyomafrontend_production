@@ -116,7 +116,7 @@ const handleBuyNow = async () => {
   return (
    <section className="max-w-7xl mx-auto px-4 lg:px-6 py-6 pb-24">
 
-      <div className="grid lg:grid-cols-[300px_1fr_340px] gap-6 items-start">
+      <div className="grid lg:grid-cols-[280px_1.1fr_1fr] gap-6 items-start">
 
         {/* LEFT (STICKY IMAGE) */}
         <div className="self-start">
@@ -125,7 +125,7 @@ const handleBuyNow = async () => {
     <div className="space-y-4">
 
       {/* MAIN IMAGE */}
-      <div className="relative bg-white border border-slate-200 rounded-2xl p-5">
+      <div className="relative bg-white border border-slate-200 rounded-2xl p-4">
         <button
           onClick={() =>
             inWishlist
@@ -138,9 +138,16 @@ unit: selectedUnit?.label || "",
                   image: images?.[0],
                 })
           }
-          className="absolute top-5 right-5 h-12 w-12 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:scale-105 transition"
+          className="absolute top-4 right-4 h-9 w-9 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:scale-105 transition"
         >
-          <Heart className={inWishlist ? "text-red-500 fill-red-500" : ""} />
+          <Heart
+  size={18}
+  className={
+    inWishlist
+      ? "text-red-500 fill-red-500"
+      : "text-slate-700"
+  }
+/>
         </button>
 
         <img
@@ -166,7 +173,7 @@ unit: selectedUnit?.label || "",
     : `http://localhost:8000${img}`
 }
             onClick={() => setActiveImage(i)}
-className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-white p-1 transition ${              activeImage === i
+className={`w-16 h-16 flex-shrink-0 rounded-xl object-cover cursor-pointer border bg-white p-1 transition ${              activeImage === i
   ? "border-blue-500 ring-4 ring-blue-100"
   : "border-slate-200"
             }`}
@@ -195,7 +202,7 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
               <span className="text-sm text-gray-600">4.4 (78 reviews)</span>
             </div>
 
-           <div className="flex items-center gap-3 flex-wrap">
+           <div className="flex items-center gap-2 flex-wrap">
   <span className="text-3xl font-bold">
   ₹{currentPrice}
 </span>
@@ -234,32 +241,127 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
             <StockIndicator stock={product.stock} />
             
            {product.unitOptions?.length > 0 && (
-  <div className="space-y-3">
-    <p className="font-medium text-slate-800">
-      Select Option
-    </p>
 
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      {product.unitOptions.map((unit:any, i:number) => (
-        <button
-          key={i}
-          onClick={() => setSelectedUnit(unit)}
-          className={`rounded-2xl border p-4 text-center transition ${
-            selectedUnit?.label === unit.label
-              ? "border-blue-600 bg-blue-50"
-              : "border-slate-200 bg-white hover:border-blue-300"
-          }`}
-        >
-          <p className="font-semibold">
-            {unit.label}
-          </p>
-          <p className="text-sm text-slate-500">
-            ₹{unit.price}
-          </p>
-        </button>
-      ))}
+  <div className="space-y-4">
+
+    <div className="flex items-center justify-between">
+
+      <p className="font-semibold text-slate-900 text-lg">
+        Select Option
+      </p>
+
+      {selectedUnit && (
+        <span className="text-sm text-blue-600 font-medium">
+          Selected: {selectedUnit.label}
+        </span>
+      )}
+
     </div>
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+
+      {product.unitOptions.map(
+        (unit: any, i: number) => {
+
+          const isSelected =
+            selectedUnit?.label === unit.label;
+
+          return (
+
+            <button
+              key={i}
+              type="button"
+              onClick={() => setSelectedUnit(unit)}
+              className={`
+              relative
+              rounded-2xl
+              border
+              p-4
+              text-left
+              transition-all
+              bg-white
+              hover:border-blue-400
+              hover:shadow-sm
+
+              ${
+                isSelected
+                  ? "border-blue-600 ring-4 ring-blue-100"
+                  : "border-slate-200"
+              }
+              `}
+            >
+
+              {/* RADIO */}
+              <div className="
+              absolute
+              top-3
+              right-3
+              ">
+
+                <div
+                  className={`
+                  w-3
+                  h-3
+                  rounded-full
+                  border-2
+                  flex
+                  items-center
+                  justify-center
+                  transition
+
+                  ${
+                    isSelected
+                      ? "border-blue-600"
+                      : "border-slate-300"
+                  }
+                  `}
+                >
+
+                  {isSelected && (
+
+                    <div className="
+                    w-2
+                    h-2
+                    rounded-full
+                    bg-blue-600
+                    " />
+
+                  )}
+
+                </div>
+
+              </div>
+
+              {/* CONTENT */}
+              <div className="space-y-1">
+
+                <p className="
+                font-bold
+                text-slate-900
+                text-lg
+                ">
+                  {unit.label}
+                </p>
+
+                <p className="
+                text-sm
+                text-slate-500
+                ">
+                  ₹{unit.price}
+                </p>
+
+              </div>
+
+            </button>
+
+          );
+        }
+      )}
+
+    </div>
+
   </div>
+
 )}
 
             <div className="flex items-center gap-4">
@@ -300,7 +402,7 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
           {/* Q&A */}
           <div>
             <h3 className="font-semibold">Questions & Answers</h3>
-            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-5 mt-3">
+            <div className="border border-slate-200 rounded-3xl shadow-sm bg-white p-4 mt-3">
               <p className="font-medium">Is it compatible with Noris implants?</p>
               <p className="text-sm text-gray-600 mt-2">
                 Yes, compatible with Noris systems.
@@ -311,23 +413,23 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 
         </div>
         {/* RIGHT COLUMN */}
-<div className="space-y-5 sticky top-24">
+<div className="space-y-5 sticky top-24 min-w-0 w-full">
 
   {/* PRICE DETAILS */}
-  <div className="flex justify-between">
+  <div className="flex items-center justify-between gap-3 text-green-600 font-medium">
   <span>Item Total</span>
   <span>₹{currentPrice * qty}</span>
 </div>
 
 {hasDiscount && (
-  <div className="flex justify-between text-green-600 font-medium">
+  <div className="flex items-center justify-between gap-2 text-green-600 font-medium">
     <span>Saved</span>
-    <span>₹{savedAmount * qty}</span>
+    <span>₹{Math.round(savedAmount * qty)}</span>
   </div>
 )}
 
  {/* OFFERS */}
-<div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+<div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
   <h3 className="font-semibold text-slate-900 mb-4">
     Available Offers
   </h3>
@@ -377,7 +479,7 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 </Button>
 
   {/* PAYMENT */}
-  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
     <h3 className="font-semibold mb-3">Payment Options</h3>
 
     <div className="grid grid-cols-2 gap-2 text-sm">
@@ -389,7 +491,7 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
   </div>
 
   {/* BENEFITS */}
-  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
     <h3 className="font-semibold mb-3">Benefits</h3>
 
     <ul className="space-y-2 text-sm">
@@ -401,7 +503,7 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
   </div>
 
   {/* REVIEWS */}
-  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
     <h3 className="font-semibold mb-3">Reviews</h3>
 
     <p className="font-medium">⭐⭐⭐⭐⭐ User</p>
@@ -494,50 +596,127 @@ className={`w-16 h-16 shrink-0 rounded-xl object-cover cursor-pointer border bg-
 export default ProductDetails;
 
 const Tabs = ({ product }: any) => {
-  const [active, setActive] = useState("");
+
+  const [active, setActive] = useState(
+    product.productDetails?.[0]?.title || ""
+  );
 
   const tabs = product.productDetails || [];
 
   if (!tabs.length) return null;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4">
-      {tabs.map((tab: any, index: number) => (
-        <div
+
+    <div className="
+    bg-white
+    border
+    border-slate-200
+    rounded-2xl
+    p-3
+    shadow-sm
+    ">
+
+     <div className="flex gap-3 h-[170px]">
+
+  {/* LEFT SCROLLABLE SECTION LIST */}
+  <div
+    className="
+    w-[180px]
+    overflow-y-auto
+    pr-1
+    space-y-2
+    scrollbar-thin
+    "
+  >
+    {tabs.map((tab: any, index: number) => {
+
+      const isActive =
+        active === tab.title;
+
+      return (
+
+        <button
           key={index}
-          className="border-b border-slate-200 last:border-b-0"
+          onClick={() =>
+            setActive(tab.title)
+          }
+          className={`
+          w-full
+          text-left
+          px-3
+          py-2
+          rounded-lg
+          text-sm
+          font-medium
+          transition-all
+          border
+
+          ${
+            isActive
+              ? `
+                bg-blue-600
+                text-white
+                border-blue-600
+              `
+              : `
+                bg-slate-50
+                text-slate-700
+                border-slate-200
+                hover:bg-blue-50
+              `
+          }
+          `}
         >
-          <button
-            onClick={() =>
-              setActive(
-                active === tab.title
-                  ? ""
-                  : tab.title
-              )
-            }
-            className="w-full py-4 flex justify-between items-center text-left"
-          >
-            <span className="font-medium text-slate-800">
-              {tab.title}
-            </span>
+          {tab.title}
+        </button>
 
-            <ChevronDown
-              size={16}
-              className={`transition ${
-                active === tab.title
-                  ? "rotate-180"
-                  : ""
-              }`}
-            />
-          </button>
+      );
+    })}
+  </div>
 
-          {active === tab.title && (
-            <div className="pb-4 text-sm text-slate-600 whitespace-pre-line">
-              {tab.content}
-            </div>
-          )}
-        </div>
-      ))}
+  {/* RIGHT CONTENT */}
+  <div
+    className="
+    flex-1
+    rounded-xl
+    bg-slate-50
+    border
+    border-slate-100
+    px-4
+    py-3
+    h-[170px]
+    overflow-y-auto
+    scrollbar-thin
+    "
+  >
+
+{tabs.map((tab: any, index: number) => {
+
+  if (active !== tab.title)
+    return null;
+
+  return (
+
+    <div
+      key={index}
+      className="
+      text-[14px]
+      leading-7
+      text-slate-700
+      whitespace-pre-line
+      "
+    >
+
+      {tab.content}
+
     </div>
+
+  );
+})}
+         </div>
+</div>
+
+</div>
+
   );
 };

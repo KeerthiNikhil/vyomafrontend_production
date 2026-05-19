@@ -19,6 +19,7 @@ import ProductDetails from "@/pages/ProductDetails";
 import Wishlist from "@/components/products/Wishlist";
 import SearchPage from "./pages/SearchPage";
 import WalletPage from "@/pages/Wallet";
+import OrdersPage from "@/pages/orders/OrdersPage";
 // Vendor pages
 import VendorVerify from "@/pages/vendor/VendorVerify";
 import VendorDashboard from "@/pages/vendor/ShopDashboard";
@@ -75,6 +76,10 @@ function App() {
           <Route path="/shop/:id" element={<ShopProducts />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/wallet" element={<WalletPage />} />
+          <Route
+  path="/orders"
+  element={<OrdersPage />}
+/>
           
           <Route
   path="/category/:slug"

@@ -58,7 +58,7 @@ const DeliveredOrders = () => {
 
         const delivered =
           res.data.data?.filter(
-            (o: any) => o.status === "Delivered"
+            (o: any) => o.status?.toLowerCase() === "delivered"
           ) || [];
 
         setOrders(delivered);
