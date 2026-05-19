@@ -57,7 +57,7 @@ const PendingOrders = () => {
         setLoading(true);
 
         const res = await axios.get(
-          "http://localhost:8000/api/v1/orders",
+  "http://localhost:8000/api/v1/orders/vendor-orders",
           {
             headers: {
               Authorization: `Bearer ${token}`,

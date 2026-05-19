@@ -68,7 +68,7 @@ const OrdersPage = () => {
           text: "text-red-600",
           icon: <XCircle size={14} />,
         };
-        
+
       default:
         return {
           bg: "bg-gray-100",
@@ -341,11 +341,14 @@ console.log(orders);
                             bg-slate-100
                             ">
 
-                              <img
- src={
-  item.product?.images?.[0] ||
-  "/placeholder.png"
-}
+                             <img
+  src={
+    item.product?.images?.[0]
+      ? item.product.images[0].startsWith("http")
+        ? item.product.images[0]
+        : `http://localhost:8000${item.product.images[0]}`
+      : "/placeholder.png"
+  }
   alt={
     item.product?.name || "Product"
   }

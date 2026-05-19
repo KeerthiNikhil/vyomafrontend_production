@@ -151,7 +151,7 @@ shadow-none
 <div className="flex items-center gap-3 sm:gap-5">
 
 <span className="hidden sm:block text-sm font-medium">
-Hi, {user.name}
+Hi, {user?.name}
 
 </span>
 
