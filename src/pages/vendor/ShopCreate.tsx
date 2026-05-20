@@ -73,6 +73,8 @@ const ShopCreate = () => {
   const [udyamNumber, setUdyamNumber] = useState("");
   const [tradeLicenseNumber, setTradeLicenseNumber] = useState("");
   const [fssaiNumber, setFssaiNumber] = useState("");
+  const [visibilityDistance, setVisibilityDistance] =
+  useState("10");
 
   const [shopImages, setShopImages] = useState<File[]>([]);
   useEffect(() => {
@@ -147,6 +149,10 @@ const ShopCreate = () => {
       formData.append("address", address);
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
+      formData.append(
+  "visibilityDistance",
+  visibilityDistance
+);
       formData.append("gstNumber", gstNumber);
       formData.append("udyamNumber", udyamNumber);
       formData.append("fssaiNumber", fssaiNumber);
@@ -298,6 +304,26 @@ const ShopCreate = () => {
 
                 <Input className={inputStyle} value={latitude} readOnly placeholder="Latitude"/>
                 <Input className={inputStyle} value={longitude} readOnly placeholder="Longitude"/>
+               <div className="space-y-2">
+
+  <Input
+    className={inputStyle}
+    type="number"
+    placeholder="Maximum Delivery / Visibility Distance (in KM)"
+    value={visibilityDistance}
+    onChange={(e) =>
+      setVisibilityDistance(e.target.value)
+    }
+  />
+
+  
+
+</div>
+
+<p className="text-xs text-slate-500">
+  Customers beyond this distance
+  will not see your shop.
+</p>
 
     <div className="space-y-3">
 

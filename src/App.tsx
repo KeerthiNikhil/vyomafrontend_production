@@ -119,6 +119,10 @@ function App() {
   path="/vendor/shops/edit/:id"
   element={<EditShop />}
 />
+<Route
+  path="/vendor/shops/images/:id"
+  element={<ShopImages />}
+/>
 
           <Route path="create-shop" element={<CreateShop />} />
 

@@ -83,24 +83,22 @@ const MyShops = () => {
 />
 
       {/* STATUS BADGE */}
-      <div className="
-      absolute
-      top-4
-      right-4
-      px-3
-      py-1
-      rounded-full
-      bg-green-500
-      text-white
-      text-xs
-      font-semibold
-      shadow
-      ">
-        Active
-      </div>
+     <div
+  className={`
+  absolute top-4 right-4
+  px-3 py-1 rounded-full
+  text-white text-xs font-semibold
 
-    </div>
-
+  ${
+    shop.isOpen
+      ? "bg-green-500"
+      : "bg-red-500"
+  }
+  `}
+>
+  {shop.isOpen ? "Open" : "Closed"}
+</div>
+</div>
     {/* CONTENT */}
     <div className="p-5 space-y-4">
 
@@ -182,24 +180,50 @@ const MyShops = () => {
 >
   Edit Shop
 </button>
+<button
+  onClick={async () => {
 
-        <button
-  onClick={() =>
-    navigate(`/vendor/shops/images/${shop._id}`)
-  }
+    try {
+
+      await axios.put(
+        `/shops/${shop._id}/toggle-status`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setShops((prev: any) =>
+        prev.map((s: any) =>
+          s._id === shop._id
+            ? {
+                ...s,
+                isOpen: !s.isOpen,
+              }
+            : s
+        )
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  }}
   className="
   flex-1
   h-11
   rounded-2xl
-  bg-slate-100
-  hover:bg-slate-200
-  text-slate-700
-  font-medium
-  transition
+  bg-black
+  text-white
   "
 >
-  Add Images
+  {shop.isOpen ? "Close Shop" : "Open Shop"}
 </button>
+        
 
       </div>
 
