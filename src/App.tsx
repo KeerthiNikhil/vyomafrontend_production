@@ -23,6 +23,9 @@ import OrdersPage from "@/pages/orders/OrdersPage";
 // Vendor pages
 import VendorVerify from "@/pages/vendor/VendorVerify";
 import VendorDashboard from "@/pages/vendor/ShopDashboard";
+import MyShops from "@/pages/vendor/MyShops";
+import EditShop from "@/pages/vendor/EditShop";
+import ShopImages from "@/pages/vendor/ShopImages";
 import CreateShop from "@/pages/vendor/ShopCreate";
 import Profile from "@/pages/vendor/Profile"; 
 import AddProduct from "@/pages/vendor/AddProduct";
@@ -107,6 +110,16 @@ function App() {
 
           <Route path="dashboard" element={<VendorDashboard />} />
          <Route path="profile" element={<Profile />} /> 
+         <Route
+  path="/vendor/shops"
+  element={<MyShops />}
+/>
+
+<Route
+  path="/vendor/shops/edit/:id"
+  element={<EditShop />}
+/>
+
           <Route path="create-shop" element={<CreateShop />} />
 
           <Route path="products/add" element={<AddProduct />} />

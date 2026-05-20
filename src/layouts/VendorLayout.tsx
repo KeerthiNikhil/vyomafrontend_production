@@ -22,7 +22,7 @@ import axios from "@/lib/axios";
 const VendorLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
+const [openShops, setOpenShops] = useState(false);
   const [openProducts, setOpenProducts] = useState(false);
   const [openCategories, setOpenCategories] = useState(false);
   const [openOrders, setOpenOrders] = useState(false);
@@ -160,8 +160,24 @@ if (checkingAuth) {
   icon={<User size={18} />} 
   onClick={handleSidebarClose}
 />
-            <SidebarLink name="Create Shop" path="/vendor/create-shop" icon={<Store size={18} onClick={handleSidebarClose} />} />
+            <ExpandableMenu
+  title="Shops"
+  icon={<Store size={18} />}
+  isOpen={openShops}
+  setIsOpen={setOpenShops}
+>
+  <SidebarLink
+    name="My Shops"
+    path="/vendor/shops"
+    onClick={handleSidebarClose}
+  />
 
+  <SidebarLink
+    name="Create Shop"
+    path="/vendor/create-shop"
+    onClick={handleSidebarClose}
+  />
+</ExpandableMenu>
             <ExpandableMenu title="Products" icon={<Package size={18} />} isOpen={openProducts} setIsOpen={setOpenProducts}>
               <SidebarLink name="Add Product" path="/vendor/products/add"  onClick={handleSidebarClose}/>
               <SidebarLink name="Manage Product" path="/vendor/products/manage" onClick={handleSidebarClose} />
@@ -296,9 +312,6 @@ if (checkingAuth) {
         © {new Date().getFullYear()} VYOMA Marketplace
       </p>
 
-      <p className="mt-1">
-        Built with ❤️ in Karnataka
-      </p>
 
     </div>
 

@@ -136,9 +136,9 @@ const Profile = () => {
           phone:
             data.user?.phone || "",
           shopId:
-            firstShop?._id || "",
+            firstShop?.id || "",
           shopName:
-            firstShop?.name || "",
+  firstShop?.name || "",
           address:
             firstShop?.address || "",
           avatar:
@@ -146,6 +146,7 @@ const Profile = () => {
         });
 
         setShops(data.shops || []);
+        console.log("SHOPS =", data.shops);
 
         /* PRODUCTS */
         const productRes =
@@ -225,7 +226,7 @@ const Profile = () => {
       await axios.put(
         "/vendor/profile",
         {
-          name: profile.name,
+          shopName: profile.shopName,
           email: profile.email,
           phone: profile.phone,
         },
@@ -243,7 +244,7 @@ const Profile = () => {
           `/shops/${profile.shopId}`,
           {
             name:
-              profile.shopName,
+              profile.name,
             address:
               profile.address,
           },
@@ -660,70 +661,43 @@ const Profile = () => {
                   selectWrapperStyle
                 }
               >
+<select
+  className={selectStyle}
+  value={profile.shopId}
+  onChange={(e) => {
 
-                <select
-                  className={
-                    selectStyle
-                  }
-                  disabled={
-                    !editMode
-                  }
-                  value={
-                    profile.shopId
-                  }
-                  onChange={(
-                    e
-                  ) => {
+    const selected = shops.find(
+      (s: any) =>
+        s.id === e.target.value
+    );
 
-                    const selected =
-                      shops.find(
-                        (
-                          s: any
-                        ) =>
-                          s._id ===
-                          e.target
-                            .value
-                      );
+    if (!selected) return;
 
-                    if (
-                      !selected
-                    )
-                      return;
+    setProfile({
+      ...profile,
+      shopId: selected.id,
+      shopName: selected.name,
+      address: selected.address,
+    });
+  }}
+>
 
-                    setProfile({
-                      ...profile,
-                      shopId:
-                        selected._id,
-                      shopName:
-                        selected.name,
-                      address:
-                        selected.address,
-                    });
-                  }}
-                >
+  <option value="">
+    Select Shop
+  </option>
 
-                  {shops.map(
-                    (
-                      shop: any
-                    ) => (
+ {shops.map((shop: any) => (
 
-                      <option
-                        key={
-                          shop._id
-                        }
-                        value={
-                          shop._id
-                        }
-                      >
-                        {
-                          shop.name
-                        }
-                      </option>
-                    )
-                  )}
+  <option
+    key={shop.id}
+    value={shop.id}
+  >
+    {shop.name}
+  </option>
 
-                </select>
+))}
 
+</select>
                 <ChevronDown
                   size={18}
                   className="
