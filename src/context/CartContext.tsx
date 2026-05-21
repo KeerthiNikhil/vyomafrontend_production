@@ -9,12 +9,13 @@ import { toast } from "sonner";
 
 
 type CartItem = {
-  id: string; // ✅ USE id everywhere
+  id: string;
   name: string;
   price: number;
   image: string;
   quantity: number;
   shop?: string;
+  deliveryFee?: number;
 };
 
 type CartContextType = {
@@ -44,6 +45,7 @@ export const CartProvider = ({ children }: any) => {
   : `http://localhost:8000${item.image}`,
   quantity: item.quantity,
   shop: item.shop,
+   deliveryFee: item.deliveryFee || 0,
 }));
 
     setCart(formatted);
@@ -69,6 +71,7 @@ export const CartProvider = ({ children }: any) => {
   : `http://localhost:8000${item.image}`,
   shop: item.shop,
   quantity: item.quantity || 1,
+  deliveryFee: item.deliveryFee || 0,
 });
 
     toast.success("Added to cart 🛒", {

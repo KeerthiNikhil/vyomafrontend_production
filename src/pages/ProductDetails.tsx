@@ -52,45 +52,33 @@ if (data.unitOptions?.length) {
 
   const images = product.images || [];
 
-  const currentPrice = Number(
-  selectedUnit?.price || product.finalPrice || 0
-);
+  
 
 const hasDiscount =
   product.discountType &&
   Number(product.discountValue) > 0;
 
-let originalPrice = currentPrice;
-let savedAmount = 0;
-let discountPercent = 0;
+const originalPrice = Number(
+  product.price || 0
+);
 
-if (hasDiscount) {
-  if (product.discountType === "percentage") {
-    originalPrice =
-      currentPrice +
-      (currentPrice * Number(product.discountValue)) / 100;
+const currentPrice = Number(
+  selectedUnit?.price ||
+  product.finalPrice ||
+  product.price ||
+  0
+);
 
-    savedAmount =
-      originalPrice - currentPrice;
+const savedAmount =
+  originalPrice - currentPrice;
 
-    discountPercent =
-      Number(product.discountValue);
-  }
-
-  if (product.discountType === "flat") {
-    originalPrice =
-      currentPrice +
-      Number(product.discountValue);
-
-    savedAmount =
-      Number(product.discountValue);
-
-    discountPercent =
-      Math.round(
-        (savedAmount / originalPrice) * 100
-      );
-  }
-}
+const discountPercent =
+  originalPrice > 0
+    ? Math.round(
+        (savedAmount / originalPrice) *
+          100
+      )
+    : 0;
 
   const handleAddToCart = async () => {
     await addToCart({
@@ -100,11 +88,12 @@ if (hasDiscount) {
 unit: selectedUnit?.label || "",
       image: images?.[0],
       shop: product.shop?._id || product.shop,
+      deliveryFee:
+  product.deliveryFee || 0,
       quantity: qty,
     });
   };
 const handleGoToCart = async () => {
-  await handleAddToCart();
   navigate("/cart");
 };
 
@@ -210,7 +199,7 @@ className={`w-16 h-16 flex-shrink-0 rounded-xl object-cover cursor-pointer borde
 {hasDiscount && (
   <>
     <span className="line-through text-base text-slate-400">
-      ₹{Math.round(originalPrice)}
+      ₹{originalPrice}
     </span>
 
     <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-sm font-medium">
@@ -219,7 +208,11 @@ className={`w-16 h-16 flex-shrink-0 rounded-xl object-cover cursor-pointer borde
   </>
 )}
 
-  <span className="text-yellow-500 text-sm">🪙 149</span>
+  {product.rewardCoins > 0 && (
+  <span className="text-yellow-500 text-sm">
+    🪙 {product.rewardCoins}
+  </span>
+)}
 </div>
 
           
@@ -386,7 +379,18 @@ className={`w-16 h-16 flex-shrink-0 rounded-xl object-cover cursor-pointer borde
             <div className="space-y-3">
   <Button
     onClick={handleAddToCart}
-    className="w-full h-10 rounded-xl bg-blue-600 text-lg font-semibold"
+    className="
+      h-12
+      px-48
+      rounded-2xl
+      bg-blue-600
+      hover:bg-blue-700
+      active:scale-95
+      transition-all
+      text-white
+      font-semibold
+      shadow-md
+      "
   >
     Add to Cart
   </Button>
@@ -434,46 +438,63 @@ className={`w-16 h-16 flex-shrink-0 rounded-xl object-cover cursor-pointer borde
     Available Offers
   </h3>
 
-  <div className="space-y-3 text-sm">
+  {product.offers?.length > 0 ? (
+    <div className="space-y-3">
+      {product.offers.map(
+        (offer: any, index: number) => (
+          <div
+            key={index}
+            className="flex items-start gap-2"
+          >
+            <span>🎁</span>
 
-    <div className="flex items-start gap-2">
-      <span className="text-green-600 text-base">🥬</span>
-      <p className="text-slate-700">
-        Buy <span className="font-semibold">2 Kg+</span> & get
-        <span className="text-green-600 font-semibold"> 5% OFF</span>
-      </p>
+            <p className="text-slate-700">
+              {offer.title}
+            </p>
+          </div>
+        )
+      )}
     </div>
-
-    <div className="flex items-start gap-2">
-      <span className="text-orange-500 text-base">🛒</span>
-      <p className="text-slate-700">
-        Shop above <span className="font-semibold">₹499</span> &
-        get <span className="text-blue-600 font-semibold">Free Delivery</span>
-      </p>
-    </div>
-
-    <div className="flex items-start gap-2">
-      <span className="text-red-500 text-base">🎁</span>
-      <p className="text-slate-700">
-        Buy <span className="font-semibold">5 Items+</span> &
-        get <span className="text-purple-600 font-semibold">10% OFF</span>
-      </p>
-    </div>
-
-  </div>
+  ) : (
+    <p className="text-sm text-slate-500">
+      No offers available
+    </p>
+  )}
 </div>
 
   {/* BUTTONS */}
   <Button
   onClick={handleGoToCart}
-  className="w-full h-10 bg-blue-600 rounded-xl"
+  className="
+      h-12
+      px-48
+      rounded-2xl
+      bg-blue-600
+      hover:bg-blue-700
+      active:scale-95
+      transition-all
+      text-white
+      font-semibold
+      shadow-md
+      "
 >
   Go To Cart
 </Button>
 
 <Button
   onClick={handleBuyNow}
-  className="w-full h-10 bg-orange-500 rounded-xl"
+  className="
+      h-12
+      px-48
+      rounded-2xl
+      bg-orange-600
+      hover:bg-blue-700
+      active:scale-95
+      transition-all
+      text-white
+      font-semibold
+      shadow-md
+      "
 >
   Buy Now
 </Button>

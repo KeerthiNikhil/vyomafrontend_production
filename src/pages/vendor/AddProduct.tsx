@@ -26,7 +26,7 @@ const textareaStyle =
   const [open, setOpen] = useState(false);
 
   const [search, setSearch] = useState("");
-
+  
   const filteredOptions = options.filter(
     (item: any) =>
       item.label
@@ -307,7 +307,16 @@ const AddProduct = () => {
 
   const [discountType,setDiscountType] = useState("");
   const [discountValue,setDiscountValue] = useState("");
-
+  const [offers, setOffers] = useState([
+  {
+    title: "",
+    type: "product",
+  },
+]);
+const [rewardCoins, setRewardCoins] =
+  useState("");
+ const [deliveryFee, setDeliveryFee] =
+  useState("");
   const [images,setImages] = useState<File[]>([]);
 
   const [file,setFile] = useState<any>(null);
@@ -446,6 +455,22 @@ formData.append("price", String(basePrice));
       formData.append("description",description);
       formData.append("discountType",discountType);
       formData.append("discountValue",discountValue);
+      formData.append(
+  "offers",
+  JSON.stringify(
+    offers.filter(
+      (o) => o.title
+    )
+  )
+);
+formData.append(
+  "rewardCoins",
+  rewardCoins
+);
+formData.append(
+  "deliveryFee",
+  deliveryFee
+);
       formData.append(
   "unitOptions",
   JSON.stringify(validUnits)
@@ -845,6 +870,15 @@ onChange={(e)=>setName(e.target.value)}
     + Add Section
   </Button>
 </div>
+<Input
+  className={inputStyle}
+  type="number"
+  placeholder="Delivery Fee"
+  value={deliveryFee}
+  onChange={(e) =>
+    setDeliveryFee(e.target.value)
+  }
+/>
 
 <div className="grid grid-cols-2 gap-3">
   <Input
@@ -957,8 +991,96 @@ onChange={(e)=>setName(e.target.value)}
 
 </div>
 
+<div className="space-y-4">
+
+  <h3 className="font-semibold text-lg">
+    Product Offers
+  </h3>
+
+  {offers.map((offer, index) => (
+
+    <div
+      key={index}
+      className="
+      grid
+      md:grid-cols-2
+      gap-3
+      "
+    >
+
+      <Input
+        className={inputStyle}
+        placeholder="Buy 2 Kg+ & get 5% OFF"
+        value={offer.title}
+        onChange={(e) => {
+
+          const updated = [...offers];
+
+          updated[index].title =
+            e.target.value;
+
+          setOffers(updated);
+
+        }}
+      />
+
+      <SelectField
+        value={offer.type}
+        onChange={(e:any) => {
+
+          const updated = [...offers];
+
+          updated[index].type =
+            e.target.value;
+
+          setOffers(updated);
+
+        }}
+      >
+        <option value="product">
+          Product Offer
+        </option>
+
+        <option value="category">
+          Category Offer
+        </option>
+
+        <option value="global">
+          Vyoma Offer
+        </option>
+      </SelectField>
+
+    </div>
+
+  ))}
+
+  <Button
+    type="button"
+    onClick={() =>
+      setOffers([
+        ...offers,
+        {
+          title: "",
+          type: "product",
+        },
+      ])
+    }
+  >
+    + Add Offer
+  </Button>
+
+</div>
 
 <div>
+  <Input
+  className={inputStyle}
+  type="number"
+  placeholder="Reward Coins"
+  value={rewardCoins}
+  onChange={(e) =>
+    setRewardCoins(e.target.value)
+  }
+/>
 
 <p className="text-sm font-medium text-gray-600">
 

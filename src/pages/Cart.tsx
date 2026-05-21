@@ -34,7 +34,10 @@ const Cart = () => {
     .toFixed(2)
 );
 
-const deliveryFee = subtotal > 499 ? 0 : 40;
+const deliveryFee =
+  subtotal > 499
+    ? 0
+    : (cart[0]?.deliveryFee || 0);
 
 const total = Number(
   (subtotal + deliveryFee).toFixed(2)
@@ -157,9 +160,13 @@ const total = Number(
     {(() => {
       const mrp = Math.round(subtotal * 1.35);
       const saved = Math.round(mrp - subtotal);
-      const deliveryFee = 95;
-      const finalDelivery = subtotal > 499 ? 0 : deliveryFee;
-      const total = subtotal + finalDelivery;
+      const finalDelivery =
+  subtotal > 499
+    ? 0
+    : deliveryFee;
+
+const total =
+  subtotal + finalDelivery;
 
       return (
         <>
@@ -201,13 +208,15 @@ const total = Number(
 </span>
 
             <div>
-              <span className="line-through text-gray-400 text-[11px] mr-2">
-                ₹95
-              </span>
-
-              <span className="text-green-600 font-semibold text-[12px]">
-                FREE
-              </span>
+             {deliveryFee > 0 ? (
+  <span className="font-semibold text-slate-800">
+    ₹{formatPrice(deliveryFee)}
+  </span>
+) : (
+  <span className="text-green-600 font-semibold">
+    FREE
+  </span>
+)}
             </div>
           </div>
 
